@@ -8,7 +8,7 @@
 # News 🎉
 - [2025-12-15] AdaptCLIP achieves **88.1%** I-AUROC, **93.0%** P-AUROC, and **52.5%** P-AUPR using only 4 training-free normal samples on the large-scale [Real-IAD Variety](https://arxiv.org/pdf/2511.00540), surpassing the state-of-the-art multi-class AD model ([Dinomaly](https://github.com/guojiajeremy/Dinomaly): 85.4% I-AUROC, 91.5% P-AUROC, and 42.8% P-AUPR) that utilizes full normal training images. 
 
-Note: The 1-shot and 2-shot AdaptCLIP results we reported in [Real-IAD-Variety paper](https://arxiv.org/pdf/2511.00540) are lower than the results below, due to our incorrect setting (**pq_context=False**). We will update the new results in the next version with **pq_context=True**.
+Note: The 1-shot and 2-shot AdaptCLIP results we reported in [Real-IAD-Variety paper](https://arxiv.org/pdf/2511.00540) are lower than the results below, due to our incorrect setting (**pq_context=False**). We will update the new results in the next version with **pq_context=True**..
 
 
 | Methods | Shot | I-AUROC | P-AUROC | P-AUPR |
