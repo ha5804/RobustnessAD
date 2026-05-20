@@ -41,6 +41,7 @@ def resolve_dataset_path(dataset_name, requested_path):
     repo_dataset = Path(__file__).resolve().parent / "dataset"
     dataset_dirs = {
         "mvtec": ["MVTec", "mvtec"],
+        "mvtec3d": ["MVTec-3D", "MVTec3D", "mvtec3d"],
         "visa": ["Visa", "visa"],
     }
     for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
@@ -64,6 +65,12 @@ def ensure_meta_json(dataset_name, dataset_dir):
         from dataset.mvtec import MVTecSolver
 
         MVTecSolver(root=dataset_dir).run()
+        return
+
+    if dataset_name == "mvtec3d":
+        from dataset.mvtec3d import MVTec3DSolver
+
+        MVTec3DSolver(root=dataset_dir).run()
         return
 
     if dataset_name == "visa":
