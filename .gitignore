@@ -8,9 +8,16 @@ __pycache__/
 *.pth
 *.jpg
 checkpoints/
+adaptclip_checkpoints/
 adaclip_checkpoints/
+result_adaptclip/
+result_winclip/
+results/
+dataset/MVTec/
+dataset/Visa/
 workspace/
 text_json/
 taiji/
 pointad/
 *.pyc
+dataset/

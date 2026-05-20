@@ -3,6 +3,7 @@
 import argparse
 import os
 import random
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -15,6 +16,63 @@ from adaptcliplib import (BinaryDiceLoss, FocalLoss, PQAdapter, TextualAdapter,
                           VisualAdapter)
 from dataset import Dataset, PromptDataset
 from tools import get_logger, get_transform, normalize, setup_seed
+
+
+def select_device(device_arg):
+    if device_arg == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+
+    device = torch.device(device_arg)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA was requested, but CUDA is not available.")
+    if device.type == "mps" and not torch.backends.mps.is_available():
+        raise RuntimeError("MPS was requested, but MPS is not available.")
+    return device
+
+
+def resolve_dataset_path(dataset_name, requested_path):
+    candidates = []
+    if requested_path:
+        candidates.append(Path(requested_path))
+
+    repo_dataset = Path(__file__).resolve().parent / "dataset"
+    dataset_dirs = {
+        "mvtec": ["MVTec", "mvtec"],
+        "visa": ["Visa", "visa"],
+    }
+    for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
+        candidates.append(repo_dataset / dirname)
+
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    tried = ", ".join(str(path) for path in candidates)
+    raise FileNotFoundError(f"Dataset root not found for {dataset_name}. Tried: {tried}")
+
+
+def ensure_meta_json(dataset_name, dataset_dir):
+    meta_path = Path(dataset_dir) / "meta.json"
+    if meta_path.exists():
+        return
+
+    if dataset_name == "mvtec":
+        from dataset.mvtec import MVTecSolver
+
+        MVTecSolver(root=dataset_dir).run()
+        return
+
+    if dataset_name == "visa":
+        from dataset.visa import VisASolver
+
+        VisASolver(root=dataset_dir).run()
+        return
+
+    raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
 
 
 def train(args):
@@ -37,7 +95,10 @@ def train(args):
     logger.info('\n')
     logger.info(args)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    train_data_path = resolve_dataset_path(dataset_name, args.train_data_path)
+    ensure_meta_json(dataset_name, train_data_path)
+
+    device = select_device(args.device)
     # ====================== Model Initialization  ======================
 
     if args.pretrained_model == 'ViT-L/14@336px':
@@ -104,7 +165,7 @@ def train(args):
 
     # ====================== Data  ======================
     preprocess, target_transform = get_transform(image_size=args.image_size)
-    train_data = Dataset(root=args.train_data_path, transform=preprocess, target_transform=target_transform, \
+    train_data = Dataset(root=train_data_path, transform=preprocess, target_transform=target_transform, \
                          dataset_name = dataset_name, k_shots= k_shots, save_dir=save_path, mode='train', seed=seed)
     train_data_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4)
     obj_list = train_data.obj_list
@@ -143,7 +204,7 @@ def train(args):
                 static_text_features = textual_learner.static_text_features
                 global_logit, local_score = visual_learner(query_feats, query_patch_feats, static_text_features)
 
-                global_loss += F.cross_entropy(global_logit, label.long().cuda())
+                global_loss += F.cross_entropy(global_logit, label.long().to(device))
 
                 local_loss += loss_focal(local_score, gt)
                 local_loss += loss_dice(local_score[:, 1, :, :], gt)
@@ -155,7 +216,7 @@ def train(args):
                 learned_text_features = model.encode_text(learned_prompts, tokenized_prompts).float()  # [2, 768]
                 global_logit, local_score = textual_learner.compute_global_local_score(query_feats, query_patch_feats, learned_text_features)
 
-                global_loss += F.cross_entropy(global_logit, label.long().cuda())
+                global_loss += F.cross_entropy(global_logit, label.long().to(device))
 
                 local_loss += loss_focal(local_score, gt)
                 local_loss += loss_dice(local_score[:, 1, :, :], gt)
@@ -166,7 +227,7 @@ def train(args):
                 global_logit, local_score_list, align_score_list = pq_learner(query_feats, query_patch_feats, prompt_feats, prompt_patch_feats)
 
                 for i in range(len(global_logit)):
-                    global_loss += F.cross_entropy(global_logit[i], label.long().cuda())
+                    global_loss += F.cross_entropy(global_logit[i], label.long().to(device))
 
                 for i in range(len(local_score_list)):
                     local_loss += loss_focal(local_score_list[i], gt)
@@ -193,9 +254,9 @@ def train(args):
                         }, ckp_path)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     parser = argparse.ArgumentParser("AdaptCLIP", add_help=True)
-    parser.add_argument("--train_data_path", type=str, default="./data/visa", help="train dataset path")
+    parser.add_argument("--train_data_path", type=str, default=None, help="train dataset path")
     parser.add_argument("--save_path", type=str, default='./checkpoint', help='path to save results')
     parser.add_argument("--dataset", type=str, default='mvtec', help="train dataset name")
     parser.add_argument("--pretrained_model", type=str, default='ViT-L/14@336px', help="pre-trained model name")
@@ -215,6 +276,7 @@ if __name__ == '__main__':
     parser.add_argument("--vl_reduction", type=int, default=4, help="the reduction number of visual learner")
     parser.add_argument("--pq_mid_dim", type=int, default=128, help="the number of the first hidden layer in pqadapter")
     parser.add_argument("--pq_context", action="store_true", help="Enable context feature")
+    parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="device to run training on")
 
     args = parser.parse_args()
     setup_seed(args.seed)

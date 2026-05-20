@@ -1,10 +1,10 @@
-device=0
+device=${CUDA_DEVICE:-0}
 
 LOG=${save_dir}"res.log"
 echo ${LOG}
 
 
-data_root=./dataset #<Set_YOUR_DATASET_DIR>
+data_root=${DATA_ROOT:-./dataset} #<Set_YOUR_DATASET_DIR>
 n_ctx=12
 vl_reduction=4
 pq_mid_dim=128
@@ -26,10 +26,10 @@ do
         base_dir=${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8
         
         
-        save_dir=./results/${base_dir}
+        save_dir=./result_adaptclip
         model_dir=./adaptclip_checkpoints/${base_dir}
 
-        CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/${test_dataset} \
+        CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/Visa \
         --seed ${seed} \
         --k_shots ${shot} \
         --checkpoint_path ${model_dir}/epoch_15.pth \
@@ -42,9 +42,9 @@ do
 done
 
 
-# test on MVTec dataset, model trained on VisA dataset
+# test on MVTec dataset, model trained on MVTec dataset
 train_dataset=mvtec
-test_dataset=visa
+test_dataset=mvtec
 for shot in 0 1 2 4
 do
     if [ ${shot} -eq 0 ]; then
@@ -57,10 +57,10 @@ do
     do 
         base_dir=${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8
         
-        save_dir=./results/${base_dir}
+        save_dir=./result_adaptclip
         model_dir=./adaptclip_checkpoints/${base_dir}
 
-        CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/${test_dataset} \
+        CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/MVTec \
         --seed ${seed} \
         --k_shots ${shot} \
         --checkpoint_path ${model_dir}/epoch_15.pth \

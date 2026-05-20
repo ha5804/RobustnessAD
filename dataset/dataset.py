@@ -8,6 +8,8 @@ import torch
 import torch.utils.data as data
 from PIL import Image, UnidentifiedImageError
 
+from corruption import apply_corruption
+
 
 def generate_class_info(dataset_name):
     class_name_map_class_id = {}
@@ -86,13 +88,15 @@ def generate_class_info(dataset_name):
 
 
 class Dataset(data.Dataset):
-    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None):
+    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None, corruption=None, corruption_severity=0):
         self.root = root
         self.transform = transform
         self.target_transform = target_transform
         self.k_shots = k_shots
         self.mode = mode
         self.save_dir = save_dir
+        self.corruption = corruption
+        self.corruption_severity = corruption_severity
 
         meta_info_json = json.load(open(f'{self.root}/meta.json', 'r'))
         meta_test_info = meta_info_json['test']
@@ -148,6 +152,10 @@ class Dataset(data.Dataset):
         if img.mode == 'L':
             # 如果是灰度图像，直接复制三份
             img = Image.merge("RGB", (img.copy(), img.copy(), img.copy()))
+        else:
+            img = img.convert("RGB")
+
+        img = apply_corruption(img, self.corruption, self.corruption_severity)
 
         if anomaly == 0:
             img_mask = Image.fromarray(np.zeros((img.size[0], img.size[1])), mode='L')
@@ -185,7 +193,7 @@ class Dataset(data.Dataset):
 
 
 class PromptDataset(data.Dataset):
-    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='test', seed=10, class_name=None):
+    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='test', seed=10, class_name=None, corruption=None, corruption_severity=0):
         self.root = root
         self.transform = transform
         self.target_transform = target_transform
@@ -193,6 +201,8 @@ class PromptDataset(data.Dataset):
         self.mode = mode
         self.save_dir = save_dir
         self.dataset_name = dataset_name
+        self.corruption = corruption
+        self.corruption_severity = corruption_severity
 
         if dataset_name == 'Real-IAD-Variety':
             self.view_list = ['C01', 'C02', 'C03', 'C04', "C05"]
@@ -267,6 +277,10 @@ class PromptDataset(data.Dataset):
         img = Image.open(os.path.join(self.root, img_path))
         if img.mode == 'L':
             img = Image.merge("RGB", (img.copy(), img.copy(), img.copy()))
+        else:
+            img = img.convert("RGB")
+
+        img = apply_corruption(img, self.corruption, self.corruption_severity)
 
         if anomaly == 0:
             img_mask = Image.fromarray(np.zeros((img.size[0], img.size[1])), mode='L')

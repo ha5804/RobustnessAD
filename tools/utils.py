@@ -41,10 +41,15 @@ def normalize(pred, max_value=None, min_value=None):
     Returns:
         Normalized prediction tensor
     """
+    pred = np.asarray(pred)
     if max_value is None or min_value is None:
-        return (pred - pred.min()) / (pred.max() - pred.min())
-    else:
-        return (pred - min_value) / (max_value - min_value)
+        min_value = pred.min()
+        max_value = pred.max()
+
+    denom = max_value - min_value
+    if denom == 0:
+        return np.zeros_like(pred, dtype=np.float32)
+    return (pred - min_value) / denom
 
 
 def get_transform(image_size=518):

@@ -2,6 +2,7 @@
 
 import json
 import os
+import argparse
 
 
 class MVTecSolver:
@@ -49,5 +50,9 @@ class MVTecSolver:
             f.write(json.dumps(info, indent=4) + "\n")
         print('normal_samples', normal_samples, 'anomaly_samples', anomaly_samples)
 if __name__ == '__main__':
-    runner = MVTecSolver(root='/remote-home/iot_zhouqihang/data/mvdataset')
+    parser = argparse.ArgumentParser("Generate MVTec meta.json")
+    parser.add_argument("--root", type=str, default="./dataset/MVTec", help="path to MVTec dataset root")
+    args = parser.parse_args()
+
+    runner = MVTecSolver(root=args.root)
     runner.run()

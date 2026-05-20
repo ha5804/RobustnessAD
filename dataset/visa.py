@@ -1,5 +1,6 @@
 import os
 import json
+import argparse
 import pandas as pd
 
 
@@ -50,5 +51,9 @@ class VisASolver(object):
 
 
 if __name__ == '__main__':
-    runner = VisASolver(root='/remote-home/iot_zhouqihang/data/Visa')
+    parser = argparse.ArgumentParser("Generate VisA meta.json")
+    parser.add_argument("--root", type=str, default="./dataset/Visa", help="path to VisA dataset root")
+    args = parser.parse_args()
+
+    runner = VisASolver(root=args.root)
     runner.run()

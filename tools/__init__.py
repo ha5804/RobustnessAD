@@ -1,4 +1,22 @@
 from .logger import get_logger
 from .utils import get_transform, normalize, setup_seed
-from .effecient_metric import Evaluator
+try:
+    from .effecient_metric import Evaluator
+except ImportError:
+    from .metric import Evaluator as _SklearnEvaluator
+
+    class Evaluator(_SklearnEvaluator):
+        def __init__(self, device=None, metrics=None, sample_level=False):
+            super().__init__(metrics=metrics or [])
+
+        def run(self, results, cls_name, logger=None):
+            converted = {}
+            for key, value in results.items():
+                if hasattr(value, "detach"):
+                    converted[key] = value.detach().cpu().numpy()
+                else:
+                    converted[key] = value
+            return super().run(converted, cls_name, logger)
+
+from .result_saver import SelectedHeatmapSaver, save_class_metrics
 from .visualization import visualizer

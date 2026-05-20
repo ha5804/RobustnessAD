@@ -862,7 +862,6 @@ class TextualAdapter(nn.Module):
         self.learn_anomaly_list = [
             "{}",
         ]
-
         self.static_normal_list = [
             "{}",
             "flawless {}",
@@ -1013,9 +1012,10 @@ class TextualAdapter(nn.Module):
         normal_description, abnormal_description = self.prompt()
         normal_tokens = tokenize(normal_description)
         abnormal_tokens = tokenize(abnormal_description)
+        device = next(model.parameters()).device
         with torch.no_grad():
-            normal_text_features = model.encode_text(normal_tokens.cuda()).float()
-            abnormal_text_features = model.encode_text(abnormal_tokens.cuda()).float()
+            normal_text_features = model.encode_text(normal_tokens.to(device)).float()
+            abnormal_text_features = model.encode_text(abnormal_tokens.to(device)).float()
 
         avg_normal_text_features = torch.mean(normal_text_features, dim = 0, keepdim= True)
         avg_abnormal_text_features = torch.mean(abnormal_text_features, dim = 0, keepdim= True)

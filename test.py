@@ -4,6 +4,7 @@ import argparse
 import pickle
 import random
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -15,7 +16,66 @@ from tqdm import tqdm
 import adaptcliplib
 from adaptcliplib import PQAdapter, TextualAdapter, VisualAdapter, fusion_fun
 from dataset import Dataset, PromptDataset
-from tools import Evaluator, get_logger, get_transform, setup_seed, visualizer
+from tools import Evaluator, SelectedHeatmapSaver, get_logger, get_transform, save_class_metrics, setup_seed, visualizer
+
+
+def select_device(device_arg):
+    """Pick the best available torch device for inference."""
+    if device_arg == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+
+    device = torch.device(device_arg)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA was requested, but CUDA is not available.")
+    if device.type == "mps" and not torch.backends.mps.is_available():
+        raise RuntimeError("MPS was requested, but MPS is not available.")
+    return device
+
+
+def resolve_dataset_path(dataset_name, requested_path):
+    """Resolve local dataset roots, including this repo's dataset/MVTec and dataset/Visa layout."""
+    candidates = []
+    if requested_path:
+        candidates.append(Path(requested_path))
+
+    repo_dataset = Path(__file__).resolve().parent / "dataset"
+    dataset_dirs = {
+        "mvtec": ["MVTec", "mvtec"],
+        "visa": ["Visa", "visa"],
+    }
+    for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
+        candidates.append(repo_dataset / dirname)
+
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+
+    tried = ", ".join(str(path) for path in candidates)
+    raise FileNotFoundError(f"Dataset root not found for {dataset_name}. Tried: {tried}")
+
+
+def ensure_meta_json(dataset_name, dataset_dir):
+    meta_path = Path(dataset_dir) / "meta.json"
+    if meta_path.exists():
+        return
+
+    if dataset_name == "mvtec":
+        from dataset.mvtec import MVTecSolver
+
+        MVTecSolver(root=dataset_dir).run()
+        return
+
+    if dataset_name == "visa":
+        from dataset.visa import VisASolver
+
+        VisASolver(root=dataset_dir).run()
+        return
+
+    raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
 
 
 def prompt_association(image_memory, patch_memory, target_class_name):
@@ -94,7 +154,8 @@ def build_prompt_memory(model, prompt_dataloader, device, obj_list, view_list, f
 def test(args):
     img_size = args.image_size
     features_list = args.features_list
-    dataset_dir = args.test_data_path
+    dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
+    ensure_meta_json(args.dataset, dataset_dir)
     save_path = args.save_path
     dataset_name = args.dataset
     batch_size = args.batch_size
@@ -109,7 +170,8 @@ def test(args):
     log_file = f'{dataset_name}_{seed}seed_{k_shots}shot_{mode}_log.txt'
     logger = get_logger(save_path, log_file)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = select_device(args.device)
+    logger.info(f"Using device: {device}")
     if args.pretrained_model == 'ViT-L/14@336px':
         model, _ = adaptcliplib.load(args.pretrained_model, device=device)
         model.visual.DAPM_replace(DPAM_layer = 20)
@@ -128,15 +190,21 @@ def test(args):
         sample_level = True
         prompt_data = PromptDataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                                     dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, \
-                                    seed=seed, class_name=args.class_name)
+                                    seed=seed, class_name=args.class_name,
+                                    corruption=args.corruption if args.corrupt_prompts else None,
+                                    corruption_severity=args.corruption_severity if args.corrupt_prompts else 0)
         test_data = Dataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                             dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, \
-                            seed=seed, class_name=args.class_name)
+                            seed=seed, class_name=args.class_name,
+                            corruption=args.corruption, corruption_severity=args.corruption_severity)
     else:
         prompt_data = PromptDataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
-                                    dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed)
+                                    dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
+                                    corruption=args.corruption if args.corrupt_prompts else None,
+                                    corruption_severity=args.corruption_severity if args.corrupt_prompts else 0)
         test_data = Dataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
-                            dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed)
+                            dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
+                            corruption=args.corruption, corruption_severity=args.corruption_severity)
         sample_level = False
     prompt_dataloader = torch.utils.data.DataLoader(prompt_data, batch_size=batch_size, shuffle=False)
     test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=4)
@@ -150,7 +218,7 @@ def test(args):
 
 
     logger.info('\n' + "loading model from: " + args.checkpoint_path)
-    checkpoint_adapter = torch.load(args.checkpoint_path)
+    checkpoint_adapter = torch.load(args.checkpoint_path, map_location="cpu")
     textual_learner.load_state_dict(checkpoint_adapter["textual_learner"])
     visual_learner.load_state_dict(checkpoint_adapter["visual_learner"])
     pq_learner.load_state_dict(checkpoint_adapter["pq_learner"])
@@ -185,11 +253,10 @@ def test(args):
 
 
     # ====================== Initialize Evaluation Metrics ======================
-    cpu_eva = False
-    if cpu_eva:
-        evaluator = Evaluator('cpu', metrics=eval_metrics, sample_level=sample_level)
-    else:
-        evaluator = Evaluator(device, metrics=eval_metrics, sample_level=sample_level)
+    cpu_eva = device.type in ["cpu", "mps"]
+    evaluator_device = "cpu" if cpu_eva else device
+    evaluator = Evaluator(evaluator_device, metrics=eval_metrics, sample_level=sample_level)
+    selected_heatmaps = SelectedHeatmapSaver(save_path, dataset_name, img_size, args.heatmap_topk) if args.save_selected_heatmaps else None
 
     # ======================Text Encoder forward ======================
     textual_learner.prepare_static_text_feature(model)
@@ -281,7 +348,7 @@ def test(args):
             # get pixel level prediction
             pixel_anomaly_map = fusion_fun([local_vl_map, local_tl_map, local_pq_map], fusion_type = args.fusion_type)
             pixel_anomaly_map = fusion_fun([pixel_anomaly_map, align_score], fusion_type = 'harmonic_mean')
-            pixel_anomaly_map = torch.stack([torch.from_numpy(gaussian_filter(i, sigma = args.sigma)) for i in pixel_anomaly_map.cpu()], dim = 0)
+            pixel_anomaly_map = torch.stack([torch.from_numpy(gaussian_filter(i, sigma = args.sigma)).float() for i in pixel_anomaly_map.cpu()], dim = 0)
             pixel_anomaly_map = pixel_anomaly_map.to(device)
 
             # get image level prediction
@@ -293,13 +360,36 @@ def test(args):
             # get pixel level prediction
             pixel_anomaly_map = fusion_fun([local_vl_map, local_tl_map], fusion_type = args.fusion_type)
 
-            pixel_anomaly_map = torch.stack([torch.from_numpy(gaussian_filter(i, sigma = args.sigma)) for i in pixel_anomaly_map.cpu()], dim = 0)
+            pixel_anomaly_map = torch.stack([torch.from_numpy(gaussian_filter(i, sigma = args.sigma)).float() for i in pixel_anomaly_map.cpu()], dim = 0)
             pixel_anomaly_map = pixel_anomaly_map.to(device)
 
             # get image level prediction
             anomaly_map_max, _ = torch.max(pixel_anomaly_map.view(current_batchsize, -1), dim=1)
             image_anomaly_pred = fusion_fun([global_vl_score, global_tl_score, anomaly_map_max], fusion_type = args.fusion_type)
 
+
+        pixel_anomaly_map = torch.nan_to_num(pixel_anomaly_map, nan=0.0, posinf=0.0, neginf=0.0)
+        image_anomaly_pred = torch.nan_to_num(image_anomaly_pred, nan=0.0, posinf=0.0, neginf=0.0)
+
+        if selected_heatmaps is not None:
+            selected_heatmaps.update(
+                query_path,
+                query_image.detach().cpu(),
+                pixel_anomaly_map.detach().cpu(),
+                gt_mask.detach().cpu(),
+                cls_name,
+            )
+
+        if args.save_heatmap:
+            visualizer(
+                query_path,
+                query_image.detach().cpu(),
+                pixel_anomaly_map.detach().cpu(),
+                (img_size, img_size),
+                save_path,
+                cls_name,
+                gt_mask.detach().cpu(),
+            )
 
         if dataset_name in ['Real-IAD-Variety', 'RealIAD', 'bmad-medical']:
             resize_mask = 256
@@ -308,9 +398,6 @@ def test(args):
                 pixel_anomaly_map = pixel_anomaly_map[:, 0]
                 gt_mask = F.interpolate(gt_mask[:, None], size=(resize_mask, resize_mask), mode='nearest')
                 gt_mask = gt_mask.bool().int()
-
-        pixel_anomaly_map  = torch.nan_to_num(pixel_anomaly_map,  nan=0.0, posinf=0.0, neginf=0.0)
-        image_anomaly_pred = torch.nan_to_num(image_anomaly_pred, nan=0.0, posinf=0.0, neginf=0.0)
 
         sample_ids.append(np.array(sample_id))
         cls_names.append(np.array(cls_name))
@@ -336,8 +423,17 @@ def test(args):
 
     # save results
     msg = {}
+    class_metric_rows = []
     for idx, cls_name in enumerate(tqdm(obj_list)):
         metric_results = evaluator.run(results_eval, cls_name, logger)
+        class_metric_rows.append(
+            {
+                "class": cls_name,
+                "image_auroc": metric_results.get("I-AUROC", ""),
+                "pixel_auroc": metric_results.get("P-AUROC", ""),
+                "p_aupr": metric_results.get("P-AP", ""),
+            }
+        )
         msg['Name'] = msg.get('Name', [])
         msg['Name'].append(cls_name)
         avg_act = True if len(obj_list) > 1 and idx == len(obj_list) - 1 else False
@@ -355,13 +451,19 @@ def test(args):
 
     tab = tabulate(msg, headers='keys', tablefmt="pipe", floatfmt='.1f', numalign="center", stralign="center", )
     logger.info('\n' + tab)
+    metrics_path = save_class_metrics(save_path, dataset_name, seed, k_shots, class_metric_rows)
+    logger.info(f"Saved class metrics to: {metrics_path}")
+
+    if selected_heatmaps is not None:
+        saved_count = selected_heatmaps.finalize()
+        logger.info(f"Saved selected heatmaps ({saved_count} files) to: {selected_heatmaps.root}")
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("AdaptCLIP", add_help=True)
     # paths
-    parser.add_argument("--test_data_path", type=str, default="./data/visa", help="path to test dataset")
+    parser.add_argument("--test_data_path", type=str, default=None, help="path to test dataset")
     parser.add_argument("--save_path", type=str, default='./results/', help='path to save results')
     parser.add_argument("--pretrained_model", type=str, default='ViT-L/14@336px', help="pre-trained model name")
     parser.add_argument("--checkpoint_path", type=str, default='./adaptclip_checkpoint/', help='path to checkpoint')
@@ -383,7 +485,16 @@ if __name__ == '__main__':
     parser.add_argument("--pq_mid_dim", type=int, default=128, help="the number of the first hidden layer in pqadapter")
     parser.add_argument("--pq_context", action="store_true", help="Enable context feature")
     parser.add_argument("--class_name", type=str, help="class name for a special dataset, for example, bottle in MVTec")
+    parser.add_argument("--save_heatmap", action="store_true", help="Save anomaly heatmap overlays during testing")
+    parser.add_argument("--save_selected_heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
+    parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
+    parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="device to run inference on")
+    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
+    parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
+    parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")
     args = parser.parse_args()
+    if args.corruption is not None and args.corruption_severity == 0:
+        args.corruption_severity = 1
     print(args)
     setup_seed(args.seed)
     test(args)
