@@ -16,7 +16,16 @@ from tqdm import tqdm
 import adaptcliplib
 from adaptcliplib import PQAdapter, TextualAdapter, VisualAdapter, fusion_fun
 from dataset import Dataset, PromptDataset
-from tools import Evaluator, SelectedHeatmapSaver, get_logger, get_transform, save_class_metrics, setup_seed, visualizer
+from tools import (
+    Evaluator,
+    SelectedHeatmapSaver,
+    get_logger,
+    get_transform,
+    resolve_corruption_save_path,
+    save_class_metrics,
+    setup_seed,
+    visualizer,
+)
 
 
 def select_device(device_arg):
@@ -83,6 +92,34 @@ def ensure_meta_json(dataset_name, dataset_dir):
         return
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
+
+
+def limit_test_samples_per_class(dataset, max_samples_per_class):
+    if max_samples_per_class is None or max_samples_per_class <= 0:
+        return
+
+    limited = []
+    for cls_name in dataset.obj_list:
+        cls_items = [item for item in dataset.data_all if item["cls_name"] == cls_name]
+        normal_items = [item for item in cls_items if item["anomaly"] == 0]
+        anomaly_items = [item for item in cls_items if item["anomaly"] != 0]
+
+        selected = []
+        if normal_items:
+            selected.append(normal_items[0])
+        if anomaly_items and len(selected) < max_samples_per_class:
+            selected.append(anomaly_items[0])
+
+        for item in cls_items:
+            if len(selected) >= max_samples_per_class:
+                break
+            if item not in selected:
+                selected.append(item)
+
+        limited.extend(selected)
+
+    dataset.data_all = limited
+    dataset.length = len(limited)
 
 
 def prompt_association(image_memory, patch_memory, target_class_name):
@@ -163,7 +200,13 @@ def test(args):
     features_list = args.features_list
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
     ensure_meta_json(args.dataset, dataset_dir)
-    save_path = args.save_path
+    save_path = resolve_corruption_save_path(
+        args.save_path,
+        args.dataset,
+        args.class_name,
+        args.corruption,
+        args.corruption_severity,
+    )
     dataset_name = args.dataset
     batch_size = args.batch_size
     k_shots = args.k_shots
@@ -207,14 +250,17 @@ def test(args):
     else:
         prompt_data = PromptDataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                                     dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
+                                    class_name=args.class_name,
                                     corruption=args.corruption if args.corrupt_prompts else None,
                                     corruption_severity=args.corruption_severity if args.corrupt_prompts else 0)
         test_data = Dataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                             dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
+                            class_name=args.class_name,
                             corruption=args.corruption, corruption_severity=args.corruption_severity)
         sample_level = False
+    limit_test_samples_per_class(test_data, args.max_test_samples_per_class)
     prompt_dataloader = torch.utils.data.DataLoader(prompt_data, batch_size=batch_size, shuffle=False)
-    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=4)
+    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=args.num_workers)
     obj_list = test_data.obj_list
     view_list = test_data.view_list
 

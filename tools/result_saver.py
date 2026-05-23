@@ -11,6 +11,16 @@ from .visualization import apply_ad_scoremap, _denormalize_image, _to_numpy
 from .utils import normalize
 
 
+def resolve_corruption_save_path(save_path, dataset_name, class_name, corruption, severity):
+    if corruption is None or severity == 0:
+        return str(save_path)
+
+    class_label = class_name or "all_classes"
+    class_label = str(class_label).replace("/", "_")
+    corruption_label = f"{corruption}_s{severity}"
+    return str(Path(save_path) / "corruption" / dataset_name / class_label / corruption_label)
+
+
 def save_class_metrics(save_path, dataset_name, seed, k_shots, rows):
     output_path = Path(save_path) / f"class_metrics_{dataset_name}_{seed}seed_{k_shots}shot.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)

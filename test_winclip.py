@@ -11,7 +11,16 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from dataset import Dataset, PromptDataset
-from tools import Evaluator, SelectedHeatmapSaver, get_logger, get_transform, save_class_metrics, setup_seed, visualizer
+from tools import (
+    Evaluator,
+    SelectedHeatmapSaver,
+    get_logger,
+    get_transform,
+    resolve_corruption_save_path,
+    save_class_metrics,
+    setup_seed,
+    visualizer,
+)
 from wincliplib.winclip import WinCLIP
 
 
@@ -132,7 +141,13 @@ def test(args):
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
     ensure_meta_json(args.dataset, dataset_dir)
 
-    save_path = args.save_path
+    save_path = resolve_corruption_save_path(
+        args.save_path,
+        args.dataset,
+        args.class_name,
+        args.corruption,
+        args.corruption_severity,
+    )
     Path(save_path).mkdir(parents=True, exist_ok=True)
 
     log_file = f"{args.dataset}_{args.seed}seed_{args.k_shots}shot_winclip_test_log.txt"

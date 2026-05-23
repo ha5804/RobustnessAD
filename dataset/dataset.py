@@ -8,7 +8,7 @@ import torch
 import torch.utils.data as data
 from PIL import Image, UnidentifiedImageError
 
-from corruption import apply_corruption
+from tools.corruption import apply_corruption
 
 
 def generate_class_info(dataset_name):
