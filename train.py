@@ -11,9 +11,9 @@ import torch.nn.functional as F
 from einops import rearrange
 from tqdm import tqdm
 
-import adaptcliplib
-from adaptcliplib import (BinaryDiceLoss, FocalLoss, PQAdapter, TextualAdapter,
-                          VisualAdapter)
+from models import adaptcliplib
+from models.adaptcliplib import (BinaryDiceLoss, FocalLoss, PQAdapter, TextualAdapter,
+                                 VisualAdapter)
 from dataset import Dataset, PromptDataset
 from tools import get_logger, get_transform, normalize, setup_seed
 
@@ -43,6 +43,8 @@ def resolve_dataset_path(dataset_name, requested_path):
     dataset_dirs = {
         "mvtec": ["MVTec", "mvtec"],
         "visa": ["Visa", "visa"],
+        "mpdd": ["MPDD", "mpdd"],
+        "btad": ["BTAD", "btad"],
     }
     for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
         candidates.append(repo_dataset / dirname)
@@ -70,6 +72,12 @@ def ensure_meta_json(dataset_name, dataset_dir):
         from dataset.visa import VisASolver
 
         VisASolver(root=dataset_dir).run()
+        return
+
+    if dataset_name in ["mpdd", "btad"]:
+        from dataset.generic_mvtec import MVTecStyleSolver
+
+        MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name).run()
         return
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
@@ -257,7 +265,7 @@ def train(args):
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser("AdaptCLIP", add_help=True)
     parser.add_argument("--train_data_path", type=str, default=None, help="train dataset path")
-    parser.add_argument("--save_path", type=str, default='./checkpoint', help='path to save results')
+    parser.add_argument("--save_path", type=str, default='./results/adaptclip_train', help='path to save results')
     parser.add_argument("--dataset", type=str, default='mvtec', help="train dataset name")
     parser.add_argument("--pretrained_model", type=str, default='ViT-L/14@336px', help="pre-trained model name")
     parser.add_argument("--n_ctx", type=int, default=12, help="the textual prompt length of textual learner")

@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 
-from adaptcliplib.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
+from models.adaptcliplib.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
 from .utils import normalize
 
 

@@ -15,7 +15,7 @@ do
 
     for seed in ${seeds}
     do
-        save_dir=./result_winclip
+        save_dir=./results/winclip
 
         if [ "${test_dataset}" = "visa" ]; then
             test_data_path=${data_root}/Visa

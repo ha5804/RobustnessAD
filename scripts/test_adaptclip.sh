@@ -26,7 +26,7 @@ do
         base_dir=${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8
         
         
-        save_dir=./result_adaptclip
+        save_dir=./results/adaptclip
         model_dir=./adaptclip_checkpoints/${base_dir}
 
         CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/Visa \
@@ -57,7 +57,7 @@ do
     do 
         base_dir=${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8
         
-        save_dir=./result_adaptclip
+        save_dir=./results/adaptclip
         model_dir=./adaptclip_checkpoints/${base_dir}
 
         CUDA_VISIBLE_DEVICES=${device} python test.py --dataset ${test_dataset}  --test_data_path ${data_root}/MVTec \

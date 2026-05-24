@@ -9,8 +9,8 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
-from adaptcliplib.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
-from adaptcliplib.transform import image_transform
+from models.adaptcliplib.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
+from models.adaptcliplib.transform import image_transform
 
 IMG_FORMATS = {"bmp", "dng", "jpeg", "jpg", "mpo", "png", "tif", "tiff", "webp", "pfm"}
 FORMATS_HELP_MSG = f"Supported formats are:\nimages: {IMG_FORMATS}"

@@ -5,7 +5,7 @@ import pickle
 import random
 from collections import defaultdict
 from pathlib import Path
-
+import os
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -13,8 +13,8 @@ from scipy.ndimage import gaussian_filter
 from tabulate import tabulate
 from tqdm import tqdm
 
-import adaptcliplib
-from adaptcliplib import PQAdapter, TextualAdapter, VisualAdapter, fusion_fun
+from models import adaptcliplib
+from models.adaptcliplib import PQAdapter, TextualAdapter, VisualAdapter, fusion_fun
 from dataset import Dataset, PromptDataset
 from tools import (
     Evaluator,
@@ -56,6 +56,8 @@ def resolve_dataset_path(dataset_name, requested_path):
         "mvtec": ["MVTec", "mvtec"],
         "mvtec3d": ["MVTec-3D", "MVTec3D", "mvtec3d"],
         "visa": ["Visa", "visa"],
+        "mpdd": ["MPDD", "mpdd"],
+        "btad": ["BTAD", "btad"],
     }
     for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
         candidates.append(repo_dataset / dirname)
@@ -89,6 +91,12 @@ def ensure_meta_json(dataset_name, dataset_dir):
         from dataset.visa import VisASolver
 
         VisASolver(root=dataset_dir).run()
+        return
+
+    if dataset_name in ["mpdd", "btad"]:
+        from dataset.generic_mvtec import MVTecStyleSolver
+
+        MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name).run()
         return
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
@@ -472,7 +480,26 @@ def test(args):
     # ====================== Evaluation ======================
     results_eval = dict(sample_ids=sample_ids, gt_masks=gt_masks, pr_masks=pr_masks, cls_names=cls_names, gt_anomalys=gt_anomalys, pr_anomalys=pr_anomalys, query_paths=query_paths)
     results_eval = {k: np.concatenate(v, axis=0) if k in ['cls_names', 'query_paths', 'sample_ids']  else torch.cat(v, dim=0) for k, v in results_eval.items()}
+        # ====================== Save per-sample predictions for difficulty split ======================
+    if args.save_difficulty_inputs:
+        difficulty_dir = os.path.join(save_path, "difficulty_inputs", dataset_name)
+        os.makedirs(difficulty_dir, exist_ok=True)
 
+        target_class = args.class_name if args.class_name is not None else "all"
+        difficulty_path = os.path.join(difficulty_dir, f"{target_class}_predictions.npz")
+
+        np.savez_compressed(
+            difficulty_path,
+            sample_ids=results_eval["sample_ids"],
+            cls_names=results_eval["cls_names"],
+            query_paths=results_eval["query_paths"],
+            gt_anomalys=results_eval["gt_anomalys"].detach().cpu().numpy(),
+            pr_anomalys=results_eval["pr_anomalys"].detach().cpu().numpy(),
+            gt_masks=results_eval["gt_masks"].detach().cpu().numpy(),
+            pr_masks=results_eval["pr_masks"].detach().cpu().numpy(),
+        )
+
+        logger.info(f"Saved difficulty inputs to: {difficulty_path}")
 
     # save results
     msg = {}
@@ -517,13 +544,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("AdaptCLIP", add_help=True)
     # paths
     parser.add_argument("--test_data_path", type=str, default=None, help="path to test dataset")
-    parser.add_argument("--save_path", type=str, default='./results/', help='path to save results')
+    parser.add_argument("--save_path", type=str, default='./results/adaptclip', help='path to save results')
     parser.add_argument("--pretrained_model", type=str, default='ViT-L/14@336px', help="pre-trained model name")
     parser.add_argument("--checkpoint_path", type=str, default='./adaptclip_checkpoint/', help='path to checkpoint')
     # model
     parser.add_argument("--dataset", type=str, default='mvtec')
     parser.add_argument("--features_list", type=int, nargs="+", default=[6, 12, 18, 24], help="features used")
     parser.add_argument("--batch_size", type=int, default=8, help="batch size")
+    parser.add_argument("--num_workers", type=int, default=0, help="number of dataloader workers")
     parser.add_argument("--image_size", type=int, default=518, help="image size")
     parser.add_argument("--n_ctx", type=int, default=12, help="zero shot")
     parser.add_argument("--seed", type=int, default=10, help="random seed")
@@ -539,8 +567,10 @@ if __name__ == '__main__':
     parser.add_argument("--pq_context", action="store_true", help="Enable context feature")
     parser.add_argument("--class_name", type=str, help="class name for a special dataset, for example, bottle in MVTec")
     parser.add_argument("--save_heatmap", action="store_true", help="Save anomaly heatmap overlays during testing")
+    parser.add_argument("--save_difficulty_inputs", action="store_true", help="Save per-sample predictions for difficulty split")
     parser.add_argument("--save_selected_heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
+    parser.add_argument("--max_test_samples_per_class", type=int, default=None, help="limit test samples per class for quick debugging")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="device to run inference on")
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")

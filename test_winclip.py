@@ -21,7 +21,7 @@ from tools import (
     setup_seed,
     visualizer,
 )
-from wincliplib.winclip import WinCLIP
+from models.wincliplib.winclip import WinCLIP
 
 
 def select_device(device_arg):
@@ -52,6 +52,8 @@ def resolve_dataset_path(dataset_name, requested_path):
         "mvtec": ["MVTec", "mvtec"],
         "mvtec3d": ["MVTec-3D", "MVTec3D", "mvtec3d"],
         "visa": ["Visa", "visa"],
+        "mpdd": ["MPDD", "mpdd"],
+        "btad": ["BTAD", "btad"],
     }
     for dirname in dataset_dirs.get(dataset_name, [dataset_name]):
         candidates.append(repo_dataset / dirname)
@@ -86,6 +88,12 @@ def ensure_meta_json(dataset_name, dataset_dir):
         from dataset.visa import VisASolver
 
         VisASolver(root=dataset_dir).run()
+        return
+
+    if dataset_name in ["mpdd", "btad"]:
+        from dataset.generic_mvtec import MVTecStyleSolver
+
+        MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name).run()
         return
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
@@ -317,6 +325,26 @@ def test(args):
         for key, value in results_eval.items()
     }
 
+    if args.save_difficulty_inputs:
+        difficulty_dir = Path(save_path) / "difficulty_inputs" / args.dataset
+        difficulty_dir.mkdir(parents=True, exist_ok=True)
+
+        target_class = args.class_name if args.class_name is not None else "all"
+        difficulty_path = difficulty_dir / f"{target_class}_predictions.npz"
+
+        np.savez_compressed(
+            difficulty_path,
+            sample_ids=results_eval["sample_ids"],
+            cls_names=results_eval["cls_names"],
+            query_paths=results_eval["query_paths"],
+            gt_anomalys=results_eval["gt_anomalys"].detach().cpu().numpy(),
+            pr_anomalys=results_eval["pr_anomalys"].detach().cpu().numpy(),
+            gt_masks=results_eval["gt_masks"].detach().cpu().numpy(),
+            pr_masks=results_eval["pr_masks"].detach().cpu().numpy(),
+        )
+
+        logger.info(f"Saved difficulty inputs to: {difficulty_path}")
+
     msg = {}
     class_metric_rows = []
     for idx, cls_name in enumerate(tqdm(obj_list, desc="Evaluating")):
@@ -377,6 +405,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_visual_gallery", action=argparse.BooleanOptionalAction, default=True, help="enable few-shot visual gallery when k_shots > 0")
     parser.add_argument("--replace_underscore", action=argparse.BooleanOptionalAction, default=True, help="replace underscores in class names for text prompts")
     parser.add_argument("--save_heatmap", action="store_true", help="save anomaly heatmap overlays during testing")
+    parser.add_argument("--save_difficulty_inputs", action="store_true", help="save per-sample predictions for difficulty split")
     parser.add_argument("--save_selected_heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
