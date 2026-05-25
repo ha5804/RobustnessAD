@@ -314,8 +314,11 @@ def test(args):
 
 
     # ====================== Initialize Evaluation Metrics ======================
-    cpu_eva = device.type in ["cpu", "mps"]
-    evaluator_device = "cpu" if cpu_eva else device
+    if args.evaluator_device == "auto":
+        evaluator_device = "cpu" if device.type in ["cpu", "mps"] else device
+    else:
+        evaluator_device = args.evaluator_device
+    cpu_eva = evaluator_device == "cpu"
     evaluator = Evaluator(evaluator_device, metrics=eval_metrics, sample_level=sample_level)
     selected_heatmaps = SelectedHeatmapSaver(save_path, dataset_name, img_size, args.heatmap_topk) if args.save_selected_heatmaps else None
 
@@ -500,6 +503,9 @@ def test(args):
         )
 
         logger.info(f"Saved difficulty inputs to: {difficulty_path}")
+        if args.predictions_only:
+            logger.info("Predictions-only mode enabled; skipping metric evaluation.")
+            return
 
     # save results
     msg = {}
@@ -568,10 +574,12 @@ if __name__ == '__main__':
     parser.add_argument("--class_name", type=str, help="class name for a special dataset, for example, bottle in MVTec")
     parser.add_argument("--save_heatmap", action="store_true", help="Save anomaly heatmap overlays during testing")
     parser.add_argument("--save_difficulty_inputs", action="store_true", help="Save per-sample predictions for difficulty split")
+    parser.add_argument("--predictions_only", "--predictions-only", action="store_true", help="stop after saving per-sample predictions")
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
     parser.add_argument("--max_test_samples_per_class", type=int, default=None, help="limit test samples per class for quick debugging")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="device to run inference on")
+    parser.add_argument("--evaluator_device", type=str, default="auto", choices=["auto", "cuda", "cpu"], help="device to run evaluation metrics on")
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
     parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")
