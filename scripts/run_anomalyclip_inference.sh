@@ -7,6 +7,9 @@ seed="${SEED:-10}"
 batch_size="${BATCH_SIZE:-8}"
 num_workers="${NUM_WORKERS:-4}"
 max_test_samples="${MAX_TEST_SAMPLES_PER_CLASS:-}"
+evaluator_device="${EVALUATOR_DEVICE:-cpu}"
+eval_metrics="${EVAL_METRICS:-I-AUROC P-AUROC P-AP}"
+predictions_only="${PREDICTIONS_ONLY:-0}"
 
 mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
 visa_root="${VISA_ROOT:-./dataset/Visa}"
@@ -51,6 +54,9 @@ run_dataset() {
     if [[ -n "${max_test_samples}" ]]; then
         sample_args=(--max_test_samples_per_class "${max_test_samples}")
     fi
+    if [[ "${predictions_only}" == "1" ]]; then
+        sample_args+=(--predictions_only)
+    fi
 
     echo "==> AnomalyCLIP inference only: dataset=${dataset}, shot=${shot}, seed=${seed}"
     CUDA_VISIBLE_DEVICES="${device}" python test_anomalyclip.py \
@@ -61,6 +67,8 @@ run_dataset() {
         --save_path "${save_root}" \
         --batch_size "${batch_size}" \
         --num_workers "${num_workers}" \
+        --evaluator_device "${evaluator_device}" \
+        --eval_metrics ${eval_metrics} \
         --save_difficulty_inputs \
         --checkpoint_path "${dataset_checkpoint}" \
         --no-save-selected-heatmaps \

@@ -371,8 +371,11 @@ def test(args):
     model.eval()
     learned_text_features = build_learned_text_features(model, args.checkpoint_path, args, device, logger)
 
-    cpu_eva = device.type in ["cpu", "mps"]
-    evaluator_device = "cpu" if cpu_eva else device
+    if args.evaluator_device == "auto":
+        evaluator_device = "cpu" if device.type in ["cpu", "mps"] else device
+    else:
+        evaluator_device = args.evaluator_device
+    cpu_eva = evaluator_device == "cpu"
     evaluator = Evaluator(evaluator_device, metrics=args.eval_metrics, sample_level=sample_level)
     selected_heatmaps = SelectedHeatmapSaver(save_path, args.dataset, args.image_size, args.heatmap_topk) if args.save_selected_heatmaps else None
 
@@ -465,6 +468,9 @@ def test(args):
             pr_masks=results_eval["pr_masks"].detach().cpu().numpy(),
         )
         logger.info(f"Saved difficulty inputs to: {difficulty_path}")
+        if args.predictions_only:
+            logger.info("Predictions-only mode enabled; skipping metric evaluation.")
+            return
 
     msg = {}
     class_metric_rows = []
@@ -518,6 +524,7 @@ if __name__ == "__main__":
     parser.add_argument("--class_name", type=str)
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"])
     parser.add_argument("--eval_metrics", type=str, nargs="+", default=["I-AUROC", "I-AP", "I-F1max", "P-AUROC", "P-AP", "P-F1max", "P-AUPRO"])
+    parser.add_argument("--evaluator_device", type=str, default="auto", choices=["auto", "cuda", "cpu"], help="device to run evaluation metrics on")
     parser.add_argument("--dpam_layer", type=int, default=20)
     parser.add_argument("--depth", type=int, default=9)
     parser.add_argument("--n_ctx", type=int, default=12)
@@ -529,6 +536,7 @@ if __name__ == "__main__":
     parser.add_argument("--object_agnostic", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--save_heatmap", action="store_true")
     parser.add_argument("--save_difficulty_inputs", action="store_true")
+    parser.add_argument("--predictions_only", "--predictions-only", action="store_true", help="stop after saving per-sample predictions")
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--heatmap_topk", type=int, default=5)
     parser.add_argument("--max_test_samples_per_class", type=int, default=None)
