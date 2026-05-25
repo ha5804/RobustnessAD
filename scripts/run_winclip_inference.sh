@@ -8,32 +8,24 @@ batch_size="${BATCH_SIZE:-8}"
 num_workers="${NUM_WORKERS:-4}"
 image_size="${IMAGE_SIZE:-240}"
 max_test_samples="${MAX_TEST_SAMPLES_PER_CLASS:-}"
-save_selected_heatmaps="${SAVE_SELECTED_HEATMAPS:-0}"
 
 mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
 visa_root="${VISA_ROOT:-./dataset/Visa}"
 mpdd_root="${MPDD_ROOT:-./dataset/MPDD}"
 btad_root="${BTAD_ROOT:-./dataset/BTAD}"
 save_root="${SAVE_ROOT:-./results/winclip}"
-split_root="${SPLIT_ROOT:-./results/difficulty_splits}"
-method="${METHOD:-winclip}"
 datasets="${DATASETS:-mvtec visa mpdd btad}"
 
 run_dataset() {
     local dataset="$1"
     local data_path="$2"
-    local heatmap_args=(--no-save-selected-heatmaps)
     local sample_args=()
-
-    if [[ "${save_selected_heatmaps}" = "1" ]]; then
-        heatmap_args=(--save-selected-heatmaps)
-    fi
 
     if [[ -n "${max_test_samples}" ]]; then
         sample_args=(--max_test_samples_per_class "${max_test_samples}")
     fi
 
-    echo "==> WinCLIP inference: dataset=${dataset}, shot=${shot}, seed=${seed}"
+    echo "==> WinCLIP inference only: dataset=${dataset}, shot=${shot}, seed=${seed}"
     CUDA_VISIBLE_DEVICES="${device}" python test_winclip.py \
         --dataset "${dataset}" \
         --test_data_path "${data_path}" \
@@ -44,20 +36,8 @@ run_dataset() {
         --batch_size "${batch_size}" \
         --num_workers "${num_workers}" \
         --save_difficulty_inputs \
-        "${heatmap_args[@]}" \
+        --no-save-selected-heatmaps \
         "${sample_args[@]}"
-
-    local npz_path="${save_root}/difficulty_inputs/${dataset}/all_predictions.npz"
-    local output_dir="${split_root}/${method}/${dataset}/${seed}seed_${shot}shot"
-
-    echo "==> Difficulty split: ${dataset}"
-    python tools/create_difficulty.py \
-        --npz_path "${npz_path}" \
-        --output_dir "${output_dir}" \
-        --dataset "${dataset}" \
-        --method "${method}" \
-        --seed "${seed}" \
-        --shot "${shot}"
 }
 
 for dataset in ${datasets}; do
@@ -81,4 +61,4 @@ for dataset in ${datasets}; do
     esac
 done
 
-echo "Done."
+echo "Inference done. Run scripts/create_all_difficulty_splits.sh locally for splits."

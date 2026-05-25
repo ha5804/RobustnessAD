@@ -145,6 +145,34 @@ def prepare_class_model(winclip, cls_name, prompt_loader, args):
     winclip._is_fit = True
 
 
+def limit_test_samples_per_class(dataset, max_samples_per_class):
+    if max_samples_per_class is None or max_samples_per_class <= 0:
+        return
+
+    limited = []
+    for cls_name in dataset.obj_list:
+        cls_items = [item for item in dataset.data_all if item["cls_name"] == cls_name]
+        normal_items = [item for item in cls_items if item["anomaly"] == 0]
+        anomaly_items = [item for item in cls_items if item["anomaly"] != 0]
+
+        selected = []
+        if normal_items:
+            selected.append(normal_items[0])
+        if anomaly_items and len(selected) < max_samples_per_class:
+            selected.append(anomaly_items[0])
+
+        for item in cls_items:
+            if len(selected) >= max_samples_per_class:
+                break
+            if item not in selected:
+                selected.append(item)
+
+        limited.extend(selected)
+
+    dataset.data_all = limited
+    dataset.length = len(limited)
+
+
 def test(args):
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
     ensure_meta_json(args.dataset, dataset_dir)
@@ -235,6 +263,7 @@ def test(args):
             corruption=args.corruption,
             corruption_severity=args.corruption_severity,
         )
+        limit_test_samples_per_class(test_data, args.max_test_samples_per_class)
 
         prompt_loader = torch.utils.data.DataLoader(prompt_data, batch_size=args.batch_size, shuffle=False)
         test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
@@ -406,8 +435,9 @@ if __name__ == "__main__":
     parser.add_argument("--replace_underscore", action=argparse.BooleanOptionalAction, default=True, help="replace underscores in class names for text prompts")
     parser.add_argument("--save_heatmap", action="store_true", help="save anomaly heatmap overlays during testing")
     parser.add_argument("--save_difficulty_inputs", action="store_true", help="save per-sample predictions for difficulty split")
-    parser.add_argument("--save_selected_heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
+    parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
+    parser.add_argument("--max_test_samples_per_class", type=int, default=None, help="limit test samples per class for quick debugging")
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
     parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")

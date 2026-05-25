@@ -1,6 +1,5 @@
 import os
 
-import cv2
 import numpy as np
 
 from models.adaptcliplib.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
@@ -25,6 +24,8 @@ def _denormalize_image(image):
 
 
 def visualizer(pathes, ori_img, anomaly_map, img_size, save_path, cls_name, img_mask=None, max=None, min=None):
+    import cv2
+
     for idx, path in enumerate(pathes):
         cls = path.split('/')[-2]
         filename = path.split('/')[-1]
@@ -50,6 +51,8 @@ def visualizer(pathes, ori_img, anomaly_map, img_size, save_path, cls_name, img_
 
 
 def apply_ad_scoremap(image, scoremap, alpha=0.5):
+    import cv2
+
     np_image = np.asarray(image, dtype=float)
     scoremap = (scoremap * 255).astype(np.uint8)
     scoremap = cv2.applyColorMap(scoremap, cv2.COLORMAP_JET)

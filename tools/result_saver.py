@@ -3,7 +3,6 @@ import heapq
 from itertools import count
 from pathlib import Path
 
-import cv2
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
@@ -98,6 +97,8 @@ class SelectedHeatmapSaver:
         return len(items)
 
     def _write_heatmap(self, output_path, item):
+        import cv2
+
         width, height = self.image_size
         image = _denormalize_image(item["image"])
         image = cv2.resize(image, (width, height))

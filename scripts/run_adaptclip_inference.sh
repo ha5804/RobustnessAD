@@ -7,21 +7,17 @@ seed="${SEED:-10}"
 batch_size="${BATCH_SIZE:-8}"
 num_workers="${NUM_WORKERS:-4}"
 max_test_samples="${MAX_TEST_SAMPLES_PER_CLASS:-}"
-save_selected_heatmaps="${SAVE_SELECTED_HEATMAPS:-0}"
 
 mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
 visa_root="${VISA_ROOT:-./dataset/Visa}"
 mpdd_root="${MPDD_ROOT:-./dataset/MPDD}"
 btad_root="${BTAD_ROOT:-./dataset/BTAD}"
 save_root="${SAVE_ROOT:-./results/adaptclip}"
-split_root="${SPLIT_ROOT:-./results/difficulty_splits}"
-method="${METHOD:-adaptclip}"
 datasets="${DATASETS:-mvtec visa mpdd btad}"
 
 n_ctx=12
 vl_reduction=4
 pq_mid_dim=128
-
 checkpoint_root="${CHECKPOINT_ROOT:-./checkpoints/adaptclip}"
 
 checkpoint_for() {
@@ -36,17 +32,14 @@ checkpoint_for() {
         printf '%s\n' "${direct}"
         return
     fi
-
     if [[ -f "${nested}" ]]; then
         printf '%s\n' "${nested}"
         return
     fi
-
     if [[ -f "${legacy_nested}" ]]; then
         printf '%s\n' "${legacy_nested}"
         return
     fi
-
     if [[ -f "${legacy_direct}" ]]; then
         printf '%s\n' "${legacy_direct}"
         return
@@ -61,19 +54,14 @@ run_dataset() {
     local data_path="$2"
     local train_dataset="$3"
     local checkpoint_path
-    local heatmap_args=(--no-save-selected-heatmaps)
     local sample_args=()
     checkpoint_path="$(checkpoint_for "${train_dataset}")"
-
-    if [[ "${save_selected_heatmaps}" = "1" ]]; then
-        heatmap_args=(--save-selected-heatmaps)
-    fi
 
     if [[ -n "${max_test_samples}" ]]; then
         sample_args=(--max_test_samples_per_class "${max_test_samples}")
     fi
 
-    echo "==> AdaptCLIP inference: dataset=${dataset}, shot=${shot}, seed=${seed}"
+    echo "==> AdaptCLIP inference only: dataset=${dataset}, shot=${shot}, seed=${seed}"
     CUDA_VISIBLE_DEVICES="${device}" python test.py \
         --dataset "${dataset}" \
         --test_data_path "${data_path}" \
@@ -93,20 +81,8 @@ run_dataset() {
         --pq_learner \
         --pq_context \
         --save_difficulty_inputs \
-        "${heatmap_args[@]}" \
+        --no-save-selected-heatmaps \
         "${sample_args[@]}"
-
-    local npz_path="${save_root}/difficulty_inputs/${dataset}/all_predictions.npz"
-    local output_dir="${split_root}/${method}/${dataset}/${seed}seed_${shot}shot"
-
-    echo "==> Difficulty split: ${dataset}"
-    python tools/create_difficulty.py \
-        --npz_path "${npz_path}" \
-        --output_dir "${output_dir}" \
-        --dataset "${dataset}" \
-        --method "${method}" \
-        --seed "${seed}" \
-        --shot "${shot}"
 }
 
 for dataset in ${datasets}; do
@@ -130,4 +106,4 @@ for dataset in ${datasets}; do
     esac
 done
 
-echo "Done."
+echo "Inference done. Run scripts/create_all_difficulty_splits.sh locally for splits."
