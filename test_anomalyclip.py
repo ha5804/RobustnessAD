@@ -69,31 +69,32 @@ def resolve_dataset_path(dataset_name, requested_path):
 def ensure_meta_json(dataset_name, dataset_dir):
     meta_path = Path(dataset_dir) / "meta.json"
     if meta_path.exists():
-        return
+        return dataset_dir
 
     if dataset_name == "mvtec":
         from dataset.mvtec import MVTecSolver
 
         MVTecSolver(root=dataset_dir).run()
-        return
+        return dataset_dir
 
     if dataset_name == "mvtec3d":
         from dataset.mvtec3d import MVTec3DSolver
 
         MVTec3DSolver(root=dataset_dir).run()
-        return
+        return dataset_dir
 
     if dataset_name == "visa":
         from dataset.visa import VisASolver
 
         VisASolver(root=dataset_dir).run()
-        return
+        return dataset_dir
 
     if dataset_name in ["mpdd", "btad"]:
         from dataset.generic_mvtec import MVTecStyleSolver
 
-        MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name).run()
-        return
+        solver = MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name)
+        solver.run()
+        return str(solver.root)
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
 
@@ -319,7 +320,7 @@ def predict_batch(model, images, cls_names, text_cache, learned_text_features, a
 
 def test(args):
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
-    ensure_meta_json(args.dataset, dataset_dir)
+    dataset_dir = ensure_meta_json(args.dataset, dataset_dir)
 
     save_path = resolve_corruption_save_path(
         args.save_path,

@@ -60,25 +60,26 @@ def resolve_dataset_path(dataset_name, requested_path):
 def ensure_meta_json(dataset_name, dataset_dir):
     meta_path = Path(dataset_dir) / "meta.json"
     if meta_path.exists():
-        return
+        return dataset_dir
 
     if dataset_name == "mvtec":
         from dataset.mvtec import MVTecSolver
 
         MVTecSolver(root=dataset_dir).run()
-        return
+        return dataset_dir
 
     if dataset_name == "visa":
         from dataset.visa import VisASolver
 
         VisASolver(root=dataset_dir).run()
-        return
+        return dataset_dir
 
     if dataset_name in ["mpdd", "btad"]:
         from dataset.generic_mvtec import MVTecStyleSolver
 
-        MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name).run()
-        return
+        solver = MVTecStyleSolver(root=dataset_dir, dataset_name=dataset_name)
+        solver.run()
+        return str(solver.root)
 
     raise FileNotFoundError(f"{meta_path} does not exist. Generate meta.json for {dataset_name} first.")
 
@@ -104,7 +105,7 @@ def train(args):
     logger.info(args)
 
     train_data_path = resolve_dataset_path(dataset_name, args.train_data_path)
-    ensure_meta_json(dataset_name, train_data_path)
+    train_data_path = ensure_meta_json(dataset_name, train_data_path)
 
     device = select_device(args.device)
     # ====================== Model Initialization  ======================
