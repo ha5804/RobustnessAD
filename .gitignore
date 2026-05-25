@@ -22,5 +22,6 @@ text_json/
 taiji/
 pointad/
 *.pyc
-dataset/
+dataset/BTAD
+dataset/MVTec_corruption
 difficulty_splits/
