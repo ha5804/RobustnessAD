@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from tools.corruption import apply_corruption
@@ -24,7 +24,7 @@ CORRUPTIONS = [
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Save corrupted MVTec/ViSA images to a local directory.")
-    parser.add_argument("--dataset", choices=["mvtec", "visa", "all"], default="all")
+    parser.add_argument("--dataset", choices=["mvtec", "visa", "btad", "all"], default="all")
     parser.add_argument(
         "--corruption",
         required=True,
@@ -54,10 +54,12 @@ def parse_corruptions(value):
 
 def dataset_roots(dataset):
     if dataset == "mvtec":
-        return [REPO_ROOT / "data" / "MVTec"]
+        return [REPO_ROOT / "dataset" / "MVTec"]
     if dataset == "visa":
-        return [REPO_ROOT / "data" / "Visa"]
-    return [REPO_ROOT / "data" / "MVTec", REPO_ROOT / "data" / "Visa"]
+        return [REPO_ROOT / "dataset" / "Visa"]
+    if dataset == "btad":
+        return [REPO_ROOT / "dataset" / "BTAD"]
+    return [REPO_ROOT / "dataset" / "MVTec", REPO_ROOT / "dataset" / "Visa", REPO_ROOT / "dataset" / "BTAD"]
 
 
 def should_corrupt(path):
@@ -84,7 +86,8 @@ def save_dataset(root, output_dir, corruption, severity, overwrite):
         print(f"skip missing dataset root: {root}")
         return 0, 0
 
-    target_root = output_dir / f"{root.name}_corruption" / corruption
+    dataset_name = "VisA" if root.name == "Visa" else root.name
+    target_root = output_dir / f"{dataset_name}_corruption" / corruption
     image_count = 0
     copied_count = 0
 

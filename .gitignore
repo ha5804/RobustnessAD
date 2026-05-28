@@ -24,4 +24,6 @@ pointad/
 *.pyc
 dataset/BTAD
 dataset/MVTec_corruption
+dataset/VisA_corruption
+dataset/BTAD_corruption
 difficulty_splits/

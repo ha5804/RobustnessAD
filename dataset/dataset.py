@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import csv
 
 import numpy as np
 import tifffile as tiff
@@ -87,8 +88,27 @@ def generate_class_info(dataset_name):
     return obj_list, class_name_map_class_id
 
 
+def _load_sample_keys(sample_csv, dataset_name):
+    if sample_csv is None:
+        return None
+
+    keys = set()
+    with open(sample_csv, newline="") as f:
+        reader = csv.DictReader(f)
+        if "sample_key" not in (reader.fieldnames or []):
+            raise ValueError(f"{sample_csv} must contain a sample_key column")
+
+        for row in reader:
+            row_dataset = row.get("dataset")
+            if row_dataset and row_dataset != dataset_name:
+                continue
+            keys.add(row["sample_key"])
+
+    return keys
+
+
 class Dataset(data.Dataset):
-    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None, corruption=None, corruption_severity=0):
+    def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None, corruption=None, corruption_severity=0, sample_csv=None):
         self.root = root
         self.transform = transform
         self.target_transform = target_transform
@@ -97,6 +117,7 @@ class Dataset(data.Dataset):
         self.save_dir = save_dir
         self.corruption = corruption
         self.corruption_severity = corruption_severity
+        self.sample_keys = _load_sample_keys(sample_csv, dataset_name)
 
         meta_info_json = json.load(open(f'{self.root}/meta.json', 'r'))
         meta_test_info = meta_info_json['test']
@@ -124,6 +145,9 @@ class Dataset(data.Dataset):
         self.data_all = []
         for cls_name in self.cls_names:
             self.data_all.extend(meta_test_info[cls_name])
+
+        if self.sample_keys is not None:
+            self.data_all = [item for item in self.data_all if item["img_path"] in self.sample_keys]
 
         self.length = len(self.data_all)
 

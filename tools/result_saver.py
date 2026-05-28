@@ -14,17 +14,25 @@ def resolve_corruption_save_path(save_path, dataset_name, class_name, corruption
     if corruption is None or severity == 0:
         return str(save_path)
 
+    save_path = Path(save_path)
     class_label = class_name or "all_classes"
     class_label = str(class_label).replace("/", "_")
     corruption_label = f"{corruption}_s{severity}"
-    return str(Path(save_path) / "corruption" / dataset_name / class_label / corruption_label)
+    if save_path.name == corruption_label:
+        return str(save_path)
+    return str(save_path / "corruption" / dataset_name / class_label / corruption_label)
 
 
 def save_class_metrics(save_path, dataset_name, seed, k_shots, rows):
     output_path = Path(save_path) / f"class_metrics_{dataset_name}_{seed}seed_{k_shots}shot.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = ["class"]
+    for row in rows:
+        for key in row:
+            if key not in fieldnames:
+                fieldnames.append(key)
     with output_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["class", "image_auroc", "pixel_auroc", "p_aupr"])
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
     return output_path

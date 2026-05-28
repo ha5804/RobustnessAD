@@ -352,6 +352,7 @@ def test(args):
         class_name=args.class_name,
         corruption=args.corruption,
         corruption_severity=args.corruption_severity,
+        sample_csv=args.sample_csv,
     )
     limit_test_samples_per_class(test_data, args.max_test_samples_per_class)
     test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
@@ -477,14 +478,7 @@ def test(args):
     class_metric_rows = []
     for idx, cls_name in enumerate(tqdm(test_data.obj_list, desc="Evaluating")):
         metric_results = evaluator.run(results_eval, cls_name, logger)
-        class_metric_rows.append(
-            {
-                "class": cls_name,
-                "image_auroc": metric_results.get("I-AUROC", ""),
-                "pixel_auroc": metric_results.get("P-AUROC", ""),
-                "p_aupr": metric_results.get("P-AP", ""),
-            }
-        )
+        class_metric_rows.append({"class": cls_name, **metric_results})
         msg["Name"] = msg.get("Name", [])
         msg["Name"].append(cls_name)
         avg_act = len(test_data.obj_list) > 1 and idx == len(test_data.obj_list) - 1
@@ -543,6 +537,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_test_samples_per_class", type=int, default=None)
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"])
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3])
+    parser.add_argument("--sample_csv", type=str, default=None, help="optional CSV with dataset and sample_key columns to filter test samples")
     args = parser.parse_args()
 
     if args.corruption is not None and args.corruption_severity == 0:

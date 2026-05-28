@@ -140,10 +140,6 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    by_class = {}
-    for row in rows:
-        by_class.setdefault(row["class"], []).append(row)
-
     summary = {
         "_meta": {
             "dataset": args.dataset,
@@ -151,16 +147,28 @@ def main():
             "seed": args.seed,
             "shot": args.shot,
             "npz_path": args.npz_path,
-            "split": "30/40/30 by class, sorted by difficulty_score ascending",
+            "split": "global 30/40/30, sorted by difficulty_score ascending",
         }
     }
-    all_split_rows = []
+    easy, normal, hard = split_30_40_30(rows)
+    all_split_rows = easy + normal + hard
+
+    summary["global"] = {
+        "easy": len(easy),
+        "normal": len(normal),
+        "hard": len(hard),
+        "total": len(all_split_rows),
+    }
+
+    by_class = {}
+    for row in all_split_rows:
+        by_class.setdefault(row["class"], []).append(row)
+
     for cls_name, cls_rows in sorted(by_class.items()):
-        final = {"easy": [], "normal": [], "hard": []}
-        easy, normal, hard = split_30_40_30(cls_rows)
-        final["easy"].extend(easy)
-        final["normal"].extend(normal)
-        final["hard"].extend(hard)
+        final = {
+            split_name: [row for row in cls_rows if row["difficulty"] == split_name]
+            for split_name in ["easy", "normal", "hard"]
+        }
 
         class_dir = os.path.join(args.output_dir, cls_name)
         os.makedirs(class_dir, exist_ok=True)
@@ -169,7 +177,6 @@ def main():
             out_path = os.path.join(class_dir, f"{split_name}.json")
             with open(out_path, "w") as f:
                 json.dump(split_rows, f, indent=4)
-            all_split_rows.extend(split_rows)
 
         summary[cls_name] = {
             "easy": len(final["easy"]),
@@ -185,11 +192,18 @@ def main():
             f"hard={summary[cls_name]['hard']}"
         )
 
+    print(
+        f"global: total={summary['global']['total']}, "
+        f"easy={summary['global']['easy']}, "
+        f"normal={summary['global']['normal']}, "
+        f"hard={summary['global']['hard']}"
+    )
+
     summary_path = os.path.join(args.output_dir, "summary.json")
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=4)
 
-    all_split_rows = sorted(all_split_rows, key=lambda x: (x["class"], x["rank"]))
+    all_split_rows = sorted(all_split_rows, key=lambda x: x["rank"])
     with open(os.path.join(args.output_dir, "all.json"), "w") as f:
         json.dump(all_split_rows, f, indent=4)
 
@@ -217,6 +231,13 @@ def main():
         writer = csv.DictWriter(f, fieldnames=csv_fields)
         writer.writeheader()
         writer.writerows(all_split_rows)
+
+    for split_name, split_rows in [("easy", easy), ("normal", normal), ("hard", hard)]:
+        split_rows = sorted(split_rows, key=lambda x: x["rank"])
+        with open(os.path.join(args.output_dir, f"{split_name}.csv"), "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=csv_fields)
+            writer.writeheader()
+            writer.writerows(split_rows)
 
     print(f"Saved difficulty split to: {args.output_dir}")
 

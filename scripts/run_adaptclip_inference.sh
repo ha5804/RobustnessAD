@@ -68,7 +68,7 @@ run_dataset() {
     fi
 
     echo "==> AdaptCLIP inference only: dataset=${dataset}, shot=${shot}, seed=${seed}"
-    CUDA_VISIBLE_DEVICES="${device}" python test.py \
+    CUDA_VISIBLE_DEVICES="${device}" python test_adpatclip.py \
         --dataset "${dataset}" \
         --test_data_path "${data_path}" \
         --seed "${seed}" \

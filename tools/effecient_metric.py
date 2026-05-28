@@ -70,53 +70,62 @@ class Evaluator:
             pr_px = pr_px.squeeze(1)
 
         eval_results = {}
+
+        def safe_compute(metric_name, fn):
+            try:
+                eval_results[metric_name] = fn()
+            except Exception as exc:
+                if logger is not None:
+                    logger.warning(f"Metric {metric_name} failed for {cls_name}: {exc}")
+                eval_results[metric_name] = float("nan")
+
         for metric in self.metrics:
             if metric.startswith('S-AUROC'):
-                eval_results[metric] = self.auroc(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.auroc(pr_s, gt_s).item())
 
             if metric.startswith('I-AUROC'):
-                eval_results[metric] = self.auroc(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.auroc(pr_sp, gt_sp).item())
 
             elif metric.startswith('P-AUROC'):
-                eval_results[metric] = self.auroc(pr_px.ravel(), gt_px.ravel()).item()
+                safe_compute(metric, lambda: self.auroc(pr_px.ravel(), gt_px.ravel()).item())
 
             elif metric.startswith('S-AP'):
-                eval_results[metric] = self.aupr(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.aupr(pr_s, gt_s).item())
 
             elif metric.startswith('I-AP'):
-                eval_results[metric] = self.aupr(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.aupr(pr_sp, gt_sp).item())
 
             elif metric.startswith('P-AP'):
-                eval_results[metric] = self.aupr(pr_px.ravel(), gt_px.ravel()).item()
+                safe_compute(metric, lambda: self.aupr(pr_px.ravel(), gt_px.ravel()).item())
 
             elif metric.startswith('S-F1max'):
-                eval_results[metric] = self.f1max(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.f1max(pr_s, gt_s).item())
 
             elif metric.startswith('I-F1max'):
-                eval_results[metric] = self.f1max(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.f1max(pr_sp, gt_sp).item())
 
             elif metric.startswith('P-F1max'):
-                eval_results[metric] = self.f1max(pr_px.ravel(), gt_px.ravel()).item()
+                safe_compute(metric, lambda: self.f1max(pr_px.ravel(), gt_px.ravel()).item())
 
             elif metric.startswith('P-AUPRO'):
-                eval_results[metric] = self.aupro(pr_px, gt_px).item()
+                safe_compute(metric, lambda: self.aupro(pr_px, gt_px).item())
 
             elif metric.startswith('I-Overkill@2'):
-                eval_results[metric] = self.overkill_escape_2(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.overkill_escape_2(pr_sp, gt_sp).item())
 
             elif metric.startswith('I-Overkill@5'):
-                eval_results[metric] = self.overkill_escape_5(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.overkill_escape_5(pr_sp, gt_sp).item())
 
             elif metric.startswith('I-Overkill@10'):
-                eval_results[metric] = self.overkill_escape_10(pr_sp, gt_sp).item()
+                safe_compute(metric, lambda: self.overkill_escape_10(pr_sp, gt_sp).item())
 
             elif metric.startswith('S-Overkill@2'):
-                eval_results[metric] = self.overkill_escape_2(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.overkill_escape_2(pr_s, gt_s).item())
 
             elif metric.startswith('S-Overkill@5'):
-                eval_results[metric] = self.overkill_escape_5(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.overkill_escape_5(pr_s, gt_s).item())
 
             elif metric.startswith('S-Overkill@10'):
-                eval_results[metric] = self.overkill_escape_10(pr_s, gt_s).item()
+                safe_compute(metric, lambda: self.overkill_escape_10(pr_s, gt_s).item())
 
         return eval_results

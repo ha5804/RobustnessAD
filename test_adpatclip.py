@@ -255,7 +255,8 @@ def test(args):
         test_data = Dataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                             dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, \
                             seed=seed, class_name=args.class_name,
-                            corruption=args.corruption, corruption_severity=args.corruption_severity)
+                            corruption=args.corruption, corruption_severity=args.corruption_severity,
+                            sample_csv=args.sample_csv)
     else:
         prompt_data = PromptDataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                                     dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
@@ -265,7 +266,8 @@ def test(args):
         test_data = Dataset(root=dataset_dir, transform=preprocess, target_transform=target_transform, \
                             dataset_name=dataset_name, k_shots=k_shots, save_dir=save_path, mode=mode, seed=seed,
                             class_name=args.class_name,
-                            corruption=args.corruption, corruption_severity=args.corruption_severity)
+                            corruption=args.corruption, corruption_severity=args.corruption_severity,
+                            sample_csv=args.sample_csv)
         sample_level = False
     limit_test_samples_per_class(test_data, args.max_test_samples_per_class)
     prompt_dataloader = torch.utils.data.DataLoader(prompt_data, batch_size=batch_size, shuffle=False)
@@ -513,14 +515,7 @@ def test(args):
     class_metric_rows = []
     for idx, cls_name in enumerate(tqdm(obj_list)):
         metric_results = evaluator.run(results_eval, cls_name, logger)
-        class_metric_rows.append(
-            {
-                "class": cls_name,
-                "image_auroc": metric_results.get("I-AUROC", ""),
-                "pixel_auroc": metric_results.get("P-AUROC", ""),
-                "p_aupr": metric_results.get("P-AP", ""),
-            }
-        )
+        class_metric_rows.append({"class": cls_name, **metric_results})
         msg['Name'] = msg.get('Name', [])
         msg['Name'].append(cls_name)
         avg_act = True if len(obj_list) > 1 and idx == len(obj_list) - 1 else False
@@ -584,6 +579,7 @@ if __name__ == '__main__':
     parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
     parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")
+    parser.add_argument("--sample_csv", type=str, default=None, help="optional CSV with dataset and sample_key columns to filter test samples")
     args = parser.parse_args()
     if args.corruption is not None and args.corruption_severity == 0:
         args.corruption_severity = 1
