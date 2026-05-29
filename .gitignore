@@ -1,5 +1,7 @@
 __pycache__/
 .ipynb_checkpoints/
+.DS_Store
+*.tar.gz
 *.py[cod]
 *$py.class
 .vscode/
@@ -27,3 +29,4 @@ dataset/MVTec_corruption
 dataset/VisA_corruption
 dataset/BTAD_corruption
 difficulty_splits/
+overleaf_tables/

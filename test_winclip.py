@@ -18,6 +18,7 @@ from tools import (
     get_transform,
     resolve_corruption_save_path,
     save_class_metrics,
+    save_sample_scores,
     setup_seed,
     visualizer,
 )
@@ -359,6 +360,9 @@ def test(args):
         key: np.concatenate(value, axis=0) if key in ["cls_names", "query_paths", "sample_ids"] else torch.cat(value, dim=0)
         for key, value in results_eval.items()
     }
+    if args.save_sample_scores:
+        scores_path = save_sample_scores(save_path, args.dataset, args.seed, args.k_shots, results_eval)
+        logger.info(f"Saved sample scores to: {scores_path}")
 
     if args.save_difficulty_inputs:
         difficulty_dir = Path(save_path) / "difficulty_inputs" / args.dataset
@@ -438,6 +442,7 @@ if __name__ == "__main__":
     parser.add_argument("--replace_underscore", action=argparse.BooleanOptionalAction, default=True, help="replace underscores in class names for text prompts")
     parser.add_argument("--save_heatmap", action="store_true", help="save anomaly heatmap overlays during testing")
     parser.add_argument("--save_difficulty_inputs", action="store_true", help="save per-sample predictions for difficulty split")
+    parser.add_argument("--save_sample_scores", action="store_true", help="save per-image anomaly scores for distribution analysis")
     parser.add_argument("--predictions_only", "--predictions-only", action="store_true", help="stop after saving per-sample predictions")
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")

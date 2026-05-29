@@ -18,5 +18,5 @@ except ImportError:
                     converted[key] = value
             return super().run(converted, cls_name, logger)
 
-from .result_saver import SelectedHeatmapSaver, resolve_corruption_save_path, save_class_metrics
+from .result_saver import SelectedHeatmapSaver, resolve_corruption_save_path, save_class_metrics, save_sample_scores
 from .visualization import visualizer

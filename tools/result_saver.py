@@ -38,6 +38,43 @@ def save_class_metrics(save_path, dataset_name, seed, k_shots, rows):
     return output_path
 
 
+def save_sample_scores(save_path, dataset_name, seed, k_shots, results_eval):
+    output_path = Path(save_path) / f"sample_scores_{dataset_name}_{seed}seed_{k_shots}shot.csv"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    sample_ids = results_eval["sample_ids"]
+    cls_names = results_eval["cls_names"]
+    query_paths = results_eval["query_paths"]
+    gt_anomalys = results_eval["gt_anomalys"].detach().cpu().numpy()
+    pr_anomalys = results_eval["pr_anomalys"].detach().cpu().numpy()
+
+    with output_path.open("w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "dataset",
+                "sample_id",
+                "class",
+                "label",
+                "image_score",
+                "query_path",
+            ],
+        )
+        writer.writeheader()
+        for idx in range(len(sample_ids)):
+            writer.writerow(
+                {
+                    "dataset": dataset_name,
+                    "sample_id": sample_ids[idx],
+                    "class": cls_names[idx],
+                    "label": int(gt_anomalys[idx]),
+                    "image_score": float(pr_anomalys[idx]),
+                    "query_path": query_paths[idx],
+                }
+            )
+    return output_path
+
+
 class SelectedHeatmapSaver:
     def __init__(self, save_path, dataset_name, image_size, topk=5):
         self.root = Path(save_path) / "heatmap" / dataset_name

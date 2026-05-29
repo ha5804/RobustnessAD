@@ -21,6 +21,7 @@ from tools import (
     get_transform,
     resolve_corruption_save_path,
     save_class_metrics,
+    save_sample_scores,
     setup_seed,
     visualizer,
 )
@@ -453,6 +454,9 @@ def test(args):
         key: np.concatenate(value, axis=0) if key in ["cls_names", "query_paths", "sample_ids"] else torch.cat(value, dim=0)
         for key, value in results_eval.items()
     }
+    if args.save_sample_scores:
+        scores_path = save_sample_scores(save_path, args.dataset, args.seed, args.k_shots, results_eval)
+        logger.info(f"Saved sample scores to: {scores_path}")
 
     if args.save_difficulty_inputs:
         difficulty_dir = Path(save_path) / "difficulty_inputs" / args.dataset
@@ -531,6 +535,7 @@ if __name__ == "__main__":
     parser.add_argument("--object_agnostic", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--save_heatmap", action="store_true")
     parser.add_argument("--save_difficulty_inputs", action="store_true")
+    parser.add_argument("--save_sample_scores", action="store_true")
     parser.add_argument("--predictions_only", "--predictions-only", action="store_true", help="stop after saving per-sample predictions")
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--heatmap_topk", type=int, default=5)

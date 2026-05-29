@@ -23,6 +23,7 @@ from tools import (
     get_transform,
     resolve_corruption_save_path,
     save_class_metrics,
+    save_sample_scores,
     setup_seed,
     visualizer,
 )
@@ -486,6 +487,9 @@ def test(args):
     # ====================== Evaluation ======================
     results_eval = dict(sample_ids=sample_ids, gt_masks=gt_masks, pr_masks=pr_masks, cls_names=cls_names, gt_anomalys=gt_anomalys, pr_anomalys=pr_anomalys, query_paths=query_paths)
     results_eval = {k: np.concatenate(v, axis=0) if k in ['cls_names', 'query_paths', 'sample_ids']  else torch.cat(v, dim=0) for k, v in results_eval.items()}
+    if args.save_sample_scores:
+        scores_path = save_sample_scores(save_path, dataset_name, seed, k_shots, results_eval)
+        logger.info(f"Saved sample scores to: {scores_path}")
         # ====================== Save per-sample predictions for difficulty split ======================
     if args.save_difficulty_inputs:
         difficulty_dir = os.path.join(save_path, "difficulty_inputs", dataset_name)
@@ -570,6 +574,7 @@ if __name__ == '__main__':
     parser.add_argument("--class_name", type=str, help="class name for a special dataset, for example, bottle in MVTec")
     parser.add_argument("--save_heatmap", action="store_true", help="Save anomaly heatmap overlays during testing")
     parser.add_argument("--save_difficulty_inputs", action="store_true", help="Save per-sample predictions for difficulty split")
+    parser.add_argument("--save_sample_scores", action="store_true", help="Save per-image anomaly scores for distribution analysis")
     parser.add_argument("--predictions_only", "--predictions-only", action="store_true", help="stop after saving per-sample predictions")
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")

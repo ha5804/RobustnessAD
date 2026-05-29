@@ -4,19 +4,16 @@ set -euo pipefail
 device="${CUDA_DEVICE:-0}"
 seed="${SEED:-10}"
 shot="${SHOT:-0}"
-batch_size="${BATCH_SIZE:-8}"
+batch_size="${BATCH_SIZE:-2}"
 num_workers="${NUM_WORKERS:-4}"
-evaluator_device="${EVALUATOR_DEVICE:-cpu}"
-results_root="${RESULTS_ROOT:-./results/corruption_benchmark}"
+evaluator_device="${EVALUATOR_DEVICE:-cuda}"
+results_root="${RESULTS_ROOT:-./results/target_failure_analysis}"
 
 models="${MODELS:-adaptclip winclip anomalyclip}"
-datasets="${DATASETS:-mvtec visa btad}"
-splits="${SPLITS:-all easy normal hard}"
-base_corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
-include_mvtec_extra="${INCLUDE_MVTEC_EXTRA:-0}"
+corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
+eval_metrics="${EVAL_METRICS:-I-AUROC P-AUROC P-AP P-F1max}"
 skip_existing="${SKIP_EXISTING:-1}"
-
-eval_metrics="${EVAL_METRICS:-I-AUROC I-AP I-F1max P-AUROC P-AP P-F1max P-AUPRO}"
+save_heatmaps="${SAVE_HEATMAPS:-0}"
 
 mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
 visa_root="${VISA_ROOT:-./dataset/Visa}"
@@ -29,13 +26,20 @@ adaptclip_checkpoint_root="${CHECKPOINT_ROOT:-./checkpoints/adaptclip}"
 anomalyclip_checkpoint_root="${ANOMALYCLIP_CHECKPOINT_ROOT:-./checkpoints/anomalyclip}"
 anomalyclip_checkpoint_path="${ANOMALYCLIP_CHECKPOINT:-}"
 
-mkdir -p "${results_root}/summaries"
-
 dataset_root() {
     case "$1" in
         mvtec) printf '%s\n' "${mvtec_root}" ;;
         visa) printf '%s\n' "${visa_root}" ;;
         btad) printf '%s\n' "${btad_root}" ;;
+        *) echo "Unknown dataset: $1" >&2; exit 2 ;;
+    esac
+}
+
+classes_for_dataset() {
+    case "$1" in
+        mvtec) printf '%s\n' cable pill screw transistor ;;
+        visa) printf '%s\n' cashew macaroni1 macaroni2 pcb2 pcb3 ;;
+        btad) printf '%s\n' 02 ;;
         *) echo "Unknown dataset: $1" >&2; exit 2 ;;
     esac
 }
@@ -89,6 +93,13 @@ train_dataset_for_adaptclip() {
     esac
 }
 
+conditions() {
+    printf 'clean\n'
+    for corruption in ${corruptions}; do
+        printf '%s_s3\n' "${corruption}"
+    done
+}
+
 condition_corruption() {
     local condition="$1"
     if [[ "${condition}" == "clean" ]]; then
@@ -98,36 +109,18 @@ condition_corruption() {
     fi
 }
 
-metric_file_for() {
-    local save_dir="$1"
-    local dataset="$2"
-    printf '%s/class_metrics_%s_%sseed_%sshot.csv\n' "${save_dir}" "${dataset}" "${seed}" "${shot}"
-}
-
-prediction_file_for() {
-    local save_dir="$1"
-    local dataset="$2"
-    printf '%s/difficulty_inputs/%s/all_predictions.npz\n' "${save_dir}" "${dataset}"
-}
-
-run_inference() {
+run_target() {
     local model="$1"
     local dataset="$2"
-    local split="$3"
+    local class_name="$3"
     local condition="$4"
-    local sample_csv="${5:-}"
-
     local root
     root="$(dataset_root "${dataset}")"
 
-    local save_dir="${results_root}/${model}/${dataset}/${split}/${condition}"
-    local metric_file
-    local prediction_file
-    metric_file="$(metric_file_for "${save_dir}" "${dataset}")"
-    prediction_file="$(prediction_file_for "${save_dir}" "${dataset}")"
-
-    if [[ "${skip_existing}" == "1" && -f "${metric_file}" && -f "${prediction_file}" ]]; then
-        echo "==> Skip existing: model=${model}, dataset=${dataset}, split=${split}, condition=${condition}"
+    local save_dir="${results_root}/${model}/${dataset}/${class_name}/${condition}"
+    local score_file="${save_dir}/sample_scores_${dataset}_${seed}seed_${shot}shot.csv"
+    if [[ "${skip_existing}" == "1" && -f "${score_file}" ]]; then
+        echo "==> Skip existing target: model=${model}, dataset=${dataset}, class=${class_name}, condition=${condition}"
         return
     fi
 
@@ -138,18 +131,12 @@ run_inference() {
         corruption_args=(--corruption "${corruption}" --corruption_severity 3)
     fi
 
-    local sample_args=()
-    if [[ -n "${sample_csv}" ]]; then
-        sample_args=(--sample_csv "${sample_csv}")
+    local heatmap_args=(--no-save-selected-heatmaps)
+    if [[ "${save_heatmaps}" == "1" ]]; then
+        heatmap_args=(--save_heatmap --save-selected-heatmaps --heatmap_topk 5)
     fi
 
-    local difficulty_args=()
-    if [[ "${split}" == "all" ]]; then
-        difficulty_args=(--save_difficulty_inputs)
-    fi
-
-    echo "==> Run: model=${model}, dataset=${dataset}, split=${split}, condition=${condition}, shot=${shot}, seed=${seed}"
-
+    echo "==> Target failure: model=${model}, dataset=${dataset}, class=${class_name}, condition=${condition}"
     case "${model}" in
         adaptclip)
             local train_dataset
@@ -159,6 +146,7 @@ run_inference() {
             CUDA_VISIBLE_DEVICES="${device}" python test_adpatclip.py \
                 --dataset "${dataset}" \
                 --test_data_path "${root}" \
+                --class_name "${class_name}" \
                 --seed "${seed}" \
                 --k_shots "${shot}" \
                 --checkpoint_path "${checkpoint_path}" \
@@ -176,15 +164,15 @@ run_inference() {
                 --textual_learner \
                 --pq_learner \
                 --pq_context \
-                ${difficulty_args[@]+"${difficulty_args[@]}"} \
-                --no-save-selected-heatmaps \
-                "${corruption_args[@]}" \
-                "${sample_args[@]}"
+                --save_sample_scores \
+                "${heatmap_args[@]}" \
+                "${corruption_args[@]}"
             ;;
         winclip)
             CUDA_VISIBLE_DEVICES="${device}" python test_winclip.py \
                 --dataset "${dataset}" \
                 --test_data_path "${root}" \
+                --class_name "${class_name}" \
                 --seed "${seed}" \
                 --k_shots "${shot}" \
                 --save_path "${save_dir}" \
@@ -193,10 +181,9 @@ run_inference() {
                 --num_workers "${num_workers}" \
                 --evaluator_device "${evaluator_device}" \
                 --eval_metrics ${eval_metrics} \
-                ${difficulty_args[@]+"${difficulty_args[@]}"} \
-                --no-save-selected-heatmaps \
-                "${corruption_args[@]}" \
-                "${sample_args[@]}"
+                --save_sample_scores \
+                "${heatmap_args[@]}" \
+                "${corruption_args[@]}"
             ;;
         anomalyclip)
             local checkpoint_path
@@ -204,6 +191,7 @@ run_inference() {
             CUDA_VISIBLE_DEVICES="${device}" python test_anomalyclip.py \
                 --dataset "${dataset}" \
                 --test_data_path "${root}" \
+                --class_name "${class_name}" \
                 --seed "${seed}" \
                 --k_shots "${shot}" \
                 --save_path "${save_dir}" \
@@ -212,10 +200,9 @@ run_inference() {
                 --evaluator_device "${evaluator_device}" \
                 --eval_metrics ${eval_metrics} \
                 --checkpoint_path "${checkpoint_path}" \
-                ${difficulty_args[@]+"${difficulty_args[@]}"} \
-                --no-save-selected-heatmaps \
-                "${corruption_args[@]}" \
-                "${sample_args[@]}"
+                --save_sample_scores \
+                "${heatmap_args[@]}" \
+                "${corruption_args[@]}"
             ;;
         *)
             echo "Unknown model: ${model}" >&2
@@ -224,71 +211,16 @@ run_inference() {
     esac
 }
 
-create_unified_split() {
-    local model="$1"
-    local output_dir="${results_root}/splits/${model}/unified/${seed}seed_${shot}shot"
-
-    if [[ "${skip_existing}" == "1" && -f "${output_dir}/all.csv" ]]; then
-        echo "==> Skip existing unified split: model=${model}"
-        return
-    fi
-
-    local input_args=()
-    for dataset in ${datasets}; do
-        local npz_path="${results_root}/${model}/${dataset}/all/clean/difficulty_inputs/${dataset}/all_predictions.npz"
-        if [[ ! -f "${npz_path}" ]]; then
-            echo "Missing clean prediction npz for unified split creation: ${npz_path}" >&2
-            exit 1
-        fi
-        input_args+=(--input "${dataset}=${npz_path}")
-    done
-
-    echo "==> Create unified split: model=${model}, datasets=${datasets}"
-    python tools/create_unified_difficulty.py \
-        "${input_args[@]}" \
-        --output_dir "${output_dir}" \
-        --method "${model}" \
-        --seed "${seed}" \
-        --shot "${shot}"
-}
-
-conditions_for_dataset() {
-    local dataset="$1"
-    printf 'clean\n'
-    for corruption in ${base_corruptions}; do
-        printf '%s_s3\n' "${corruption}"
-    done
-    if [[ "${dataset}" == "mvtec" && "${include_mvtec_extra}" == "1" ]]; then
-        printf 'contrast_s3\njpeg_compression_s3\ndownsample_upsample_s3\n'
-    fi
-}
-
 for model in ${models}; do
-    for dataset in ${datasets}; do
-        run_inference "${model}" "${dataset}" "all" "clean" ""
-    done
-    create_unified_split "${model}"
-done
-
-for model in ${models}; do
-    for dataset in ${datasets}; do
-        split_dir="${results_root}/splits/${model}/unified/${seed}seed_${shot}shot"
-        while IFS= read -r condition; do
-            for split in ${splits}; do
-                sample_csv=""
-                if [[ "${split}" != "all" ]]; then
-                    sample_csv="${split_dir}/${split}.csv"
-                    if [[ ! -f "${sample_csv}" ]]; then
-                        echo "Missing split csv: ${sample_csv}" >&2
-                        exit 1
-                    fi
-                fi
-                run_inference "${model}" "${dataset}" "${split}" "${condition}" "${sample_csv}"
-            done
-        done < <(conditions_for_dataset "${dataset}")
+    for dataset in mvtec visa btad; do
+        while IFS= read -r class_name; do
+            while IFS= read -r condition; do
+                run_target "${model}" "${dataset}" "${class_name}" "${condition}"
+            done < <(conditions)
+        done < <(classes_for_dataset "${dataset}")
     done
 done
 
-python tools/summarize_corruption_benchmark.py --root "${results_root}"
+python tools/analyze_score_distribution.py --root "${results_root}"
 
-echo "Unified corruption benchmark done: ${results_root}"
+echo "Target failure analysis done: ${results_root}"
