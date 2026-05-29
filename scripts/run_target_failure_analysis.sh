@@ -14,6 +14,8 @@ corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
 eval_metrics="${EVAL_METRICS:-I-AUROC P-AUROC P-AP P-F1max}"
 skip_existing="${SKIP_EXISTING:-1}"
 save_heatmaps="${SAVE_HEATMAPS:-0}"
+save_all_heatmaps="${SAVE_ALL_HEATMAPS:-0}"
+heatmap_topk="${HEATMAP_TOPK:-5}"
 
 mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
 visa_root="${VISA_ROOT:-./dataset/Visa}"
@@ -133,7 +135,10 @@ run_target() {
 
     local heatmap_args=(--no-save-selected-heatmaps)
     if [[ "${save_heatmaps}" == "1" ]]; then
-        heatmap_args=(--save_heatmap --save-selected-heatmaps --heatmap_topk 5)
+        heatmap_args=(--save-selected-heatmaps --heatmap_topk "${heatmap_topk}")
+        if [[ "${save_all_heatmaps}" == "1" ]]; then
+            heatmap_args=(--save_heatmap --save-selected-heatmaps --heatmap_topk "${heatmap_topk}")
+        fi
     fi
 
     echo "==> Target failure: model=${model}, dataset=${dataset}, class=${class_name}, condition=${condition}"
