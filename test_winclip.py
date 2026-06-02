@@ -436,7 +436,7 @@ if __name__ == "__main__":
     parser.add_argument("--scales", type=int, nargs="+", default=[2, 3], help="WinCLIP window scales")
     parser.add_argument("--precision", type=str, default=None, choices=[None, "fp32", "fp16"], help="model precision")
     parser.add_argument("--fusion_version", type=str, default="textual_visual", choices=["textual", "visual", "textual_visual"], help="WinCLIP fusion mode")
-    parser.add_argument("--image_score_mode", type=str, default="topk_mean", choices=["max", "mean", "topk_mean"], help="image-level score from heatmap")
+    parser.add_argument("--image_score_mode", type=str, default="global", choices=["global", "max", "mean", "topk_mean"], help="image-level anomaly score mode")
     parser.add_argument("--image_score_topk_ratio", type=float, default=0.01, help="top-k ratio for image-level score")
     parser.add_argument("--use_visual_gallery", action=argparse.BooleanOptionalAction, default=True, help="enable few-shot visual gallery when k_shots > 0")
     parser.add_argument("--replace_underscore", action=argparse.BooleanOptionalAction, default=True, help="replace underscores in class names for text prompts")

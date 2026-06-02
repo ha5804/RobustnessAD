@@ -142,6 +142,9 @@ class OpenClipWinModel(torch.nn.Module):
     def encode_image(self, image):
         return self.visual(image)
 
+    def encode_global_image(self, image):
+        return self.model.encode_image(image)
+
     def encode_text(self, text):
         return self.model.encode_text(text)
 
@@ -230,6 +233,13 @@ class WinClipAD(torch.nn.Module):
         return [f / f.norm(dim=-1, keepdim=True) for f in image_features]
 
     @torch.no_grad()
+    def encode_global_image(self, image: torch.Tensor):
+        if self.precision == "fp16":
+            image = image.half()
+        image_features = self.model.encode_global_image(image)
+        return image_features / image_features.norm(dim=-1, keepdim=True)
+
+    @torch.no_grad()
     def encode_text(self, text: torch.Tensor):
         text_features = self.model.encode_text(text)
         return text_features
@@ -239,13 +249,14 @@ class WinClipAD(torch.nn.Module):
         #Winclip 핵심 contribution1.
         template_level_prompts = [
         "a cropped photo of the {}.",
+        "a cropped photo of a {}.",
         "a close-up photo of a {}.",
         "a close-up photo of the {}.",
         "a bright photo of a {}.",
         "a bright photo of the {}.",
         "a dark photo of the {}.",
         "a dark photo of a {}.",
-        "a jpeg corrupted photo of the {}.",
+        "a jpeg corrupted photo of a {}.",
         "a jpeg corrupted photo of the {}.",
         "a blurry photo of the {}.",
         "a blurry photo of a {}.",
@@ -391,6 +402,17 @@ class WinClipAD(torch.nn.Module):
         cur_visual_gallery = self.visual_gallery[cur_scale_indx]
 
         for indx, (features, mask) in enumerate(zip(visual_features, self.masks)):
+            if indx in self.scale_begin_indx[1:]:
+                # deal with the first two scales
+                token_anomaly_scores = token_anomaly_scores / token_weights
+                scale_anomaly_scores.append(token_anomaly_scores)
+
+                # another scale, calculate from scratch
+                token_anomaly_scores = torch.zeros((N, self.grid_size[0] * self.grid_size[1]))
+                token_weights = torch.zeros((N, self.grid_size[0] * self.grid_size[1]))
+                cur_scale_indx += 1
+                cur_visual_gallery = self.visual_gallery[cur_scale_indx]
+
             normality_score = 0.5 * (1 - (features @ cur_visual_gallery.T).max(dim=1)[0])
             normality_score = normality_score.cpu()
 
@@ -402,17 +424,6 @@ class WinClipAD(torch.nn.Module):
             # cur_token_anomaly_score[:, mask] = (1. - normality_score).unsqueeze(1)
             cur_token_weight = torch.zeros((N, self.grid_size[0] * self.grid_size[1]))
             cur_token_weight[:, mask] = 1.
-
-            if indx in self.scale_begin_indx[1:]:
-                cur_scale_indx += 1
-                cur_visual_gallery = self.visual_gallery[cur_scale_indx]
-                # deal with the first two scales
-                token_anomaly_scores = token_anomaly_scores / token_weights
-                scale_anomaly_scores.append(token_anomaly_scores)
-
-                # another scale, calculate from scratch
-                token_anomaly_scores = torch.zeros((N, self.grid_size[0] * self.grid_size[1]))
-                token_weights = torch.zeros((N, self.grid_size[0] * self.grid_size[1]))
 
             token_weights += cur_token_weight
             token_anomaly_scores += cur_token_anomaly_score
@@ -477,7 +488,7 @@ class WinCLIP:
         use_visual_gallery=True,
         batch_size=1,
         fusion_version="textual_visual",
-        image_score_mode="topk_mean",
+        image_score_mode="global",
         image_score_topk_ratio=0.01,
     ):
         self.category = category
@@ -616,12 +627,19 @@ class WinCLIP:
             return flat.topk(k, dim=1).values.mean(dim=1)
         raise ValueError(f"Unknown image_score_mode: {self.image_score_mode}")
 
+    def _score_images(self, imgs, heatmaps):
+        if self.image_score_mode == "global":
+            imgs = self._to_clip_input(imgs)
+            image_features = self.model.encode_global_image(imgs)
+            return (100.0 * image_features @ self.model.text_features.T).softmax(dim=-1)[:, 1]
+        return self._score_heatmaps(heatmaps)
+
     def predict(self, img):
         heatmap = self._predict_batch_map(img)[0]
-        score = self._score_heatmaps(heatmap.unsqueeze(0))[0]
+        score = self._score_images(img, heatmap.unsqueeze(0))[0]
         return score, heatmap
 
     def predict_batch(self, imgs):
         heatmaps = self._predict_batch_map(imgs)
-        scores = self._score_heatmaps(heatmaps)
+        scores = self._score_images(imgs, heatmaps)
         return scores, [heatmap for heatmap in heatmaps]
