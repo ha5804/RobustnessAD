@@ -68,15 +68,21 @@ class OpenClipWinVisual(torch.nn.Module):
         return masks, scale_begin_indx
 
     def forward(self, image):
-        tokens = self.encode_patch_tokens(image)
+        class_token, patch_tokens, patch_pos = self.encode_pre_transformer_tokens(image)
         features = []
-        for mask in self.masks:
-            mask = mask.to(tokens.device)
-            window_feature = tokens[:, mask].mean(dim=1)
-            features.append(window_feature)
+        scale_starts = list(self.scale_begin_indx) + [len(self.masks)]
+        for start, end in zip(scale_starts[:-1], scale_starts[1:]):
+            features.extend(
+                self.encode_window_features(
+                    class_token,
+                    patch_tokens,
+                    patch_pos,
+                    self.masks[start:end],
+                )
+            )
         return features
 
-    def encode_patch_tokens(self, image):
+    def encode_pre_transformer_tokens(self, image):
         visual = self.visual
         #마찬가지로 위의 backbone을 불러온다.
         #hasattr을 통해 vit구조인지 확인한다.
@@ -98,25 +104,32 @@ class OpenClipWinVisual(torch.nn.Module):
         cls_token = visual.class_embedding.to(x.dtype)
         #batch크기에 맞게 복제
         cls_token = cls_token + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device)
-        x = torch.cat([cls_token, x], dim=1)
-        #x에 위치정보 추가
-        x = x + self._positional_embedding(x, grid_h, grid_w)
+        patch_pos = self._patch_positional_embedding(x.dtype, x.device, grid_h, grid_w)
+        cls_token = cls_token + self._class_positional_embedding(x.dtype, x.device)
+        return cls_token, x, patch_pos
 
-        patch_dropout = getattr(visual, "patch_dropout", None)
-        if patch_dropout is not None:
-            x = patch_dropout(x)
+    def encode_window_features(self, class_token, patch_tokens, patch_pos, masks):
+        visual = self.visual
+        mask_indices = torch.stack(
+            [mask.to(patch_tokens.device).nonzero(as_tuple=False).squeeze(1) for mask in masks],
+            dim=0,
+        )
+        batch_size, _, width = patch_tokens.shape
+        num_windows, window_area = mask_indices.shape
 
+        window_tokens = patch_tokens[:, mask_indices]
+        window_pos = patch_pos[mask_indices].unsqueeze(0)
+        class_token = class_token.unsqueeze(1).expand(batch_size, num_windows, -1, -1)
+        x = torch.cat([class_token, window_tokens + window_pos], dim=2)
+        x = x.reshape(batch_size * num_windows, window_area + 1, width)
         x = visual.ln_pre(x)
-        x = x.permute(1, 0, 2)
         x = visual.transformer(x)
-        x = x.permute(1, 0, 2)
-        x = x[:, 1:]
-        x = visual.ln_post(x)
-        #Clip embedding space로 projection
+        x = visual.ln_post(x[:, 0])
         proj = getattr(visual, "proj", None)
         if proj is not None:
             x = x @ proj
-        return x
+        x = x.reshape(batch_size, num_windows, -1)
+        return [x[:, window_index] for window_index in range(num_windows)]
 
     def _positional_embedding(self, x, grid_h, grid_w):
         pos = self.visual.positional_embedding.to(dtype=x.dtype, device=x.device)
@@ -131,6 +144,20 @@ class OpenClipWinVisual(torch.nn.Module):
         patch_pos = F.interpolate(patch_pos, size=(grid_h, grid_w), mode="bicubic", align_corners=False)
         patch_pos = patch_pos.permute(0, 2, 3, 1).reshape(grid_h * grid_w, -1)
         return torch.cat([class_pos, patch_pos], dim=0)
+
+    def _class_positional_embedding(self, dtype, device):
+        return self.visual.positional_embedding[:1].to(dtype=dtype, device=device).unsqueeze(0)
+
+    def _patch_positional_embedding(self, dtype, device, grid_h, grid_w):
+        pos = self.visual.positional_embedding.to(dtype=dtype, device=device)
+        patch_pos = pos[1:]
+        if patch_pos.shape[0] == grid_h * grid_w:
+            return patch_pos
+
+        old_grid = int(patch_pos.shape[0] ** 0.5)
+        patch_pos = patch_pos.reshape(1, old_grid, old_grid, -1).permute(0, 3, 1, 2)
+        patch_pos = F.interpolate(patch_pos, size=(grid_h, grid_w), mode="bicubic", align_corners=False)
+        return patch_pos.permute(0, 2, 3, 1).reshape(grid_h * grid_w, -1)
 
 
 class OpenClipWinModel(torch.nn.Module):
