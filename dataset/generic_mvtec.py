@@ -15,7 +15,12 @@ NORMAL_DIRS = {"good", "ok"}
 
 
 def is_image(path):
-    return path.is_file() and path.suffix.lower() in IMAGE_SUFFIXES
+    return (
+        path.is_file()
+        and not path.name.startswith("._")
+        and path.name != ".DS_Store"
+        and path.suffix.lower() in IMAGE_SUFFIXES
+    )
 
 
 class MVTecStyleSolver:

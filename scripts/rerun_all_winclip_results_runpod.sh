@@ -4,16 +4,18 @@ set -euo pipefail
 # Rerun every WinCLIP result family currently used in this repo.
 #
 # Default behavior:
-# - overwrites WinCLIP outputs under results/corruption_benchmark
-# - overwrites WinCLIP outputs under results/target_failure_analysis
+# - resumes missing WinCLIP outputs under results/corruption_benchmark
+# - resumes missing WinCLIP outputs under results/target_failure_analysis
 # - optionally refreshes the simple results/winclip inference folder
 # - keeps AdaptCLIP / AnomalyCLIP outputs intact
+# - does not delete existing results unless DELETE_OLD_WINCLIP=1 is explicitly set
 #
 # RunPod example:
 #   bash scripts/rerun_all_winclip_results_runpod.sh
 #
 # Useful overrides:
 #   CUDA_DEVICE=0 BATCH_SIZE=8 NUM_WORKERS=8 bash scripts/rerun_all_winclip_results_runpod.sh
+#   FORCE_RERUN=1 CUDA_DEVICE=0 BATCH_SIZE=8 NUM_WORKERS=8 bash scripts/rerun_all_winclip_results_runpod.sh
 #   RUN_TARGET=0 bash scripts/rerun_all_winclip_results_runpod.sh
 #   RUN_CORRUPTION=0 RUN_STANDALONE=1 bash scripts/rerun_all_winclip_results_runpod.sh
 
@@ -28,7 +30,12 @@ evaluator_device="${EVALUATOR_DEVICE:-cpu}"
 run_corruption="${RUN_CORRUPTION:-1}"
 run_target="${RUN_TARGET:-1}"
 run_standalone="${RUN_STANDALONE:-0}"
-delete_old="${DELETE_OLD_WINCLIP:-1}"
+delete_old="${DELETE_OLD_WINCLIP:-0}"
+force_rerun="${FORCE_RERUN:-0}"
+skip_existing="${SKIP_EXISTING:-1}"
+if [[ "${force_rerun}" == "1" ]]; then
+    skip_existing=0
+fi
 
 results_root="${RESULTS_ROOT:-./results/corruption_benchmark}"
 target_results_root="${TARGET_RESULTS_ROOT:-./results/target_failure_analysis}"
@@ -52,7 +59,7 @@ export EVALUATOR_DEVICE="${evaluator_device}"
 export MVTEC_ROOT="${mvtec_root}"
 export VISA_ROOT="${visa_root}"
 export BTAD_ROOT="${btad_root}"
-export SKIP_EXISTING=0
+export SKIP_EXISTING="${skip_existing}"
 
 echo "==> Rerun WinCLIP results"
 echo "    CUDA_DEVICE=${device}"
@@ -60,10 +67,35 @@ echo "    SEED=${seed}, SHOT=${shot}"
 echo "    DATASETS=${datasets}"
 echo "    CORRUPTIONS=${corruptions}"
 echo "    DELETE_OLD_WINCLIP=${delete_old}"
+echo "    SKIP_EXISTING=${SKIP_EXISTING}"
 echo
 
+if [[ -d "${btad_root}" ]]; then
+    echo "==> Cleaning macOS resource-fork files from BTAD, if any"
+    find "${btad_root}" -name '._*' -delete
+    if [[ -f "${btad_root}/meta.json" ]]; then
+        if grep -qE '(^|/)\._|\.DS_Store' "${btad_root}/meta.json"; then
+            echo "==> Regenerating BTAD meta.json because hidden files were recorded"
+            rm -f "${btad_root}/meta.json"
+            python dataset/generic_mvtec.py --root "${btad_root}" --dataset btad
+        fi
+    else
+        echo "==> Generating BTAD meta.json"
+        python dataset/generic_mvtec.py --root "${btad_root}" --dataset btad
+    fi
+fi
+
 if [[ "${delete_old}" == "1" ]]; then
-    echo "==> Removing old WinCLIP-only outputs before rerun"
+    backup_path="./winclip_results_backup_before_delete_$(date +%Y%m%d_%H%M%S).tar.gz"
+    echo "==> DELETE_OLD_WINCLIP=1 requested. Backing up existing WinCLIP outputs to ${backup_path}"
+    tar -czf "${backup_path}" \
+        "${results_root}/winclip" \
+        "${results_root}/splits/winclip" \
+        "${target_results_root}/winclip" \
+        "${standalone_save_root}" \
+        2>/dev/null || true
+
+    echo "==> Removing old WinCLIP-only outputs after backup"
     if [[ "${run_corruption}" == "1" ]]; then
         rm -rf \
             "${results_root}/winclip" \

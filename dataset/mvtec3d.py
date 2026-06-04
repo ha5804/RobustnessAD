@@ -86,7 +86,12 @@ class MVTec3DSolver:
     def _list_images(self, directory):
         return sorted(
             path for path in directory.iterdir()
-            if path.is_file() and path.suffix.lower() in self.IMG_EXTENSIONS
+            if (
+                path.is_file()
+                and not path.name.startswith("._")
+                and path.name != ".DS_Store"
+                and path.suffix.lower() in self.IMG_EXTENSIONS
+            )
         )
 
     def _find_mask_dir(self, cls_dir, specie_dir, specie):

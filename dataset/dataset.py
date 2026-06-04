@@ -107,6 +107,17 @@ def _load_sample_keys(sample_csv, dataset_name):
     return keys
 
 
+def _is_valid_meta_item(item):
+    img_name = os.path.basename(str(item.get("img_path", "")))
+    mask_name = os.path.basename(str(item.get("mask_path", "")))
+    hidden_names = {".DS_Store"}
+    if img_name.startswith("._") or img_name in hidden_names:
+        return False
+    if mask_name and (mask_name.startswith("._") or mask_name in hidden_names):
+        return False
+    return True
+
+
 class Dataset(data.Dataset):
     def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None, corruption=None, corruption_severity=0, sample_csv=None):
         self.root = root
@@ -123,7 +134,10 @@ class Dataset(data.Dataset):
         meta_test_info = meta_info_json['test']
         meta_train_info = meta_info_json['train']
 
-        self.prompt_data_all = meta_train_info
+        self.prompt_data_all = {
+            cls_name: [item for item in items if _is_valid_meta_item(item)]
+            for cls_name, items in meta_train_info.items()
+        }
 
         if class_name is not None:
             self.cls_names = [class_name]
@@ -144,7 +158,7 @@ class Dataset(data.Dataset):
 
         self.data_all = []
         for cls_name in self.cls_names:
-            self.data_all.extend(meta_test_info[cls_name])
+            self.data_all.extend(item for item in meta_test_info[cls_name] if _is_valid_meta_item(item))
 
         if self.sample_keys is not None:
             self.data_all = [item for item in self.data_all if item["img_path"] in self.sample_keys]

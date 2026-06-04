@@ -5,6 +5,17 @@ import os
 import argparse
 
 
+IMG_EXTENSIONS = {'.bmp', '.jpg', '.jpeg', '.png', '.tif', '.tiff'}
+
+
+def is_image_name(name):
+    return (
+        not name.startswith('._')
+        and name != '.DS_Store'
+        and os.path.splitext(name)[1].lower() in IMG_EXTENSIONS
+    )
+
+
 class MVTecSolver:
     CLSNAMES = [
         'bottle', 'cable', 'capsule', 'carpet', 'grid',
@@ -27,8 +38,8 @@ class MVTecSolver:
                 species = os.listdir(f'{cls_dir}/{phase}')
                 for specie in species:
                     is_abnormal = True if specie not in ['good'] else False
-                    img_names = os.listdir(f'{cls_dir}/{phase}/{specie}')
-                    mask_names = os.listdir(f'{cls_dir}/ground_truth/{specie}') if is_abnormal else None
+                    img_names = [name for name in os.listdir(f'{cls_dir}/{phase}/{specie}') if is_image_name(name)]
+                    mask_names = [name for name in os.listdir(f'{cls_dir}/ground_truth/{specie}') if is_image_name(name)] if is_abnormal else None
                     img_names.sort()
                     mask_names.sort() if mask_names is not None else None
                     for idx, img_name in enumerate(img_names):
