@@ -121,7 +121,8 @@ run_target() {
 
     local save_dir="${results_root}/${model}/${dataset}/${class_name}/${condition}"
     local score_file="${save_dir}/sample_scores_${dataset}_${seed}seed_${shot}shot.csv"
-    if [[ "${skip_existing}" == "1" && -f "${score_file}" ]]; then
+    local metric_file="${save_dir}/class_metrics_${dataset}_${seed}seed_${shot}shot.csv"
+    if [[ "${skip_existing}" == "1" && -s "${score_file}" && -s "${metric_file}" ]]; then
         echo "==> Skip existing target: model=${model}, dataset=${dataset}, class=${class_name}, condition=${condition}"
         return
     fi

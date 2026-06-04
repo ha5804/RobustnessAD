@@ -110,6 +110,20 @@ prediction_file_for() {
     printf '%s/difficulty_inputs/%s/all_predictions.npz\n' "${save_dir}" "${dataset}"
 }
 
+run_complete() {
+    local split="$1"
+    local metric_file="$2"
+    local prediction_file="$3"
+
+    if [[ ! -s "${metric_file}" ]]; then
+        return 1
+    fi
+    if [[ "${split}" == "all" && ! -s "${prediction_file}" ]]; then
+        return 1
+    fi
+    return 0
+}
+
 run_inference() {
     local model="$1"
     local dataset="$2"
@@ -126,7 +140,7 @@ run_inference() {
     metric_file="$(metric_file_for "${save_dir}" "${dataset}")"
     prediction_file="$(prediction_file_for "${save_dir}" "${dataset}")"
 
-    if [[ "${skip_existing}" == "1" && -f "${metric_file}" && -f "${prediction_file}" ]]; then
+    if [[ "${skip_existing}" == "1" ]] && run_complete "${split}" "${metric_file}" "${prediction_file}"; then
         echo "==> Skip existing: model=${model}, dataset=${dataset}, split=${split}, condition=${condition}"
         return
     fi
