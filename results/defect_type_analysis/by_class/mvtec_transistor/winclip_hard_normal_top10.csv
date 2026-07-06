@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+winclip,mvtec,transistor,good,52,0.5234375,dataset\MVTec\transistor/test/good/052.png
+winclip,mvtec,transistor,good,28,0.385009765625,dataset\MVTec\transistor/test/good/028.png
+winclip,mvtec,transistor,good,36,0.355712890625,dataset\MVTec\transistor/test/good/036.png
+winclip,mvtec,transistor,good,9,0.34521484375,dataset\MVTec\transistor/test/good/009.png
+winclip,mvtec,transistor,good,58,0.341552734375,dataset\MVTec\transistor/test/good/058.png
+winclip,mvtec,transistor,good,55,0.32080078125,dataset\MVTec\transistor/test/good/055.png
+winclip,mvtec,transistor,good,3,0.31396484375,dataset\MVTec\transistor/test/good/003.png
+winclip,mvtec,transistor,good,10,0.31396484375,dataset\MVTec\transistor/test/good/010.png
+winclip,mvtec,transistor,good,59,0.275146484375,dataset\MVTec\transistor/test/good/059.png
+winclip,mvtec,transistor,good,45,0.275146484375,dataset\MVTec\transistor/test/good/045.png

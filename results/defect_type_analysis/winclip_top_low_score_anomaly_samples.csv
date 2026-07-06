@@ -1,0 +1,9 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+winclip,visa,macaroni1,Anomaly,88,0.0311431884765625,dataset\Visa\macaroni1/Data/Images/Anomaly/088.JPG
+winclip,visa,macaroni1,Anomaly,18,0.0330810546875,dataset\Visa\macaroni1/Data/Images/Anomaly/018.JPG
+winclip,visa,macaroni1,Anomaly,6,0.035675048828125,dataset\Visa\macaroni1/Data/Images/Anomaly/006.JPG
+winclip,visa,pcb3,Anomaly,7,0.035675048828125,dataset\Visa\pcb3/Data/Images/Anomaly/007.JPG
+winclip,visa,pcb3,Anomaly,40,0.03790283203125,dataset\Visa\pcb3/Data/Images/Anomaly/040.JPG
+winclip,visa,macaroni1,Anomaly,49,0.0384521484375,dataset\Visa\macaroni1/Data/Images/Anomaly/049.JPG
+winclip,visa,pcb3,Anomaly,45,0.0390625,dataset\Visa\pcb3/Data/Images/Anomaly/045.JPG
+winclip,visa,pcb3,Anomaly,68,0.0390625,dataset\Visa\pcb3/Data/Images/Anomaly/068.JPG

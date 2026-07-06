@@ -488,7 +488,11 @@ def test(args):
     results_eval = dict(sample_ids=sample_ids, gt_masks=gt_masks, pr_masks=pr_masks, cls_names=cls_names, gt_anomalys=gt_anomalys, pr_anomalys=pr_anomalys, query_paths=query_paths)
     results_eval = {k: np.concatenate(v, axis=0) if k in ['cls_names', 'query_paths', 'sample_ids']  else torch.cat(v, dim=0) for k, v in results_eval.items()}
     if args.save_sample_scores:
-        scores_path = save_sample_scores(save_path, dataset_name, seed, k_shots, results_eval)
+        sample_score_path = save_path
+        if args.class_name is not None:
+            safe_class_name = str(args.class_name).replace("/", "_").replace("\\", "_")
+            sample_score_path = Path("results") / "model" / f"{safe_class_name}_sample_score"
+        scores_path = save_sample_scores(sample_score_path, dataset_name, seed, k_shots, results_eval)
         logger.info(f"Saved sample scores to: {scores_path}")
         # ====================== Save per-sample predictions for difficulty split ======================
     if args.save_difficulty_inputs:

@@ -1,0 +1,6 @@
+defect_type,label,n_samples,mean_score_range,max_score_range,adaptclip_mean_score,anomalyclip_mean_score,winclip_mean_score
+cut_lead,1,10,0.5899,0.7132,0.8245,0.8834,0.2934
+bent_lead,1,10,0.5142,0.6452,0.8404,0.868,0.3585
+damaged_case,1,10,0.4503,0.5754,0.9038,0.8816,0.4552
+misplaced,1,10,0.3783,0.5763,0.8086,0.8647,0.4866
+good,0,60,0.5715,0.7004,0.7394,0.789,0.2184

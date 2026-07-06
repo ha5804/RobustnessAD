@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+anomalyclip,mvtec,transistor,misplaced,5,0.7419695854187012,dataset\MVTec\transistor/test/misplaced/005.png
+anomalyclip,mvtec,transistor,bent_lead,9,0.7892701625823975,dataset\MVTec\transistor/test/bent_lead/009.png
+anomalyclip,mvtec,transistor,cut_lead,8,0.7951379418373108,dataset\MVTec\transistor/test/cut_lead/008.png
+anomalyclip,mvtec,transistor,damaged_case,2,0.7997364401817322,dataset\MVTec\transistor/test/damaged_case/002.png
+anomalyclip,mvtec,transistor,misplaced,0,0.8182664513587952,dataset\MVTec\transistor/test/misplaced/000.png
+anomalyclip,mvtec,transistor,damaged_case,0,0.8185274600982666,dataset\MVTec\transistor/test/damaged_case/000.png
+anomalyclip,mvtec,transistor,bent_lead,2,0.8259807825088501,dataset\MVTec\transistor/test/bent_lead/002.png
+anomalyclip,mvtec,transistor,cut_lead,9,0.8371015191078186,dataset\MVTec\transistor/test/cut_lead/009.png
+anomalyclip,mvtec,transistor,bent_lead,5,0.8387423753738403,dataset\MVTec\transistor/test/bent_lead/005.png
+anomalyclip,mvtec,transistor,damaged_case,5,0.8437072038650513,dataset\MVTec\transistor/test/damaged_case/005.png

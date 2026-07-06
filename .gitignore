@@ -14,7 +14,7 @@ adaptclip_checkpoints/
 adaclip_checkpoints/
 result_adaptclip/
 result_winclip/
-results/
+
 dataset/MVTec/
 dataset/MVTec-3D/
 dataset/MVTec3D/
@@ -30,3 +30,4 @@ dataset/VisA_corruption
 dataset/BTAD_corruption
 difficulty_splits/
 overleaf_tables/
+.cache/*
