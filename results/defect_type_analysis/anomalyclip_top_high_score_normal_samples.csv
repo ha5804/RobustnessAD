@@ -1,9 +1,0 @@
-model,dataset,class,defect_type,sample_id,image_score,query_path
-anomalyclip,mvtec,pill,good,19,0.9930725693702698,dataset\MVTec\pill/test/good/019.png
-anomalyclip,mvtec,screw,good,4,0.9872308373451232,dataset\MVTec\screw/test/good/004.png
-anomalyclip,mvtec,screw,good,14,0.9855251908302308,dataset\MVTec\screw/test/good/014.png
-anomalyclip,mvtec,pill,good,23,0.9844059944152832,dataset\MVTec\pill/test/good/023.png
-anomalyclip,mvtec,screw,good,36,0.98279470205307,dataset\MVTec\screw/test/good/036.png
-anomalyclip,mvtec,screw,good,28,0.9827916026115416,dataset\MVTec\screw/test/good/028.png
-anomalyclip,mvtec,pill,good,4,0.9824225902557372,dataset\MVTec\pill/test/good/004.png
-anomalyclip,mvtec,screw,good,21,0.9817852973937988,dataset\MVTec\screw/test/good/021.png

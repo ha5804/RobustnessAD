@@ -1,9 +1,0 @@
-model,dataset,class,defect_type,sample_id,image_score,query_path
-winclip,mvtec,transistor,good,52,0.5234375,dataset\MVTec\transistor/test/good/052.png
-winclip,visa,cashew,good,487,0.422607421875,dataset\Visa\cashew/Data/Images/Normal/487.JPG
-winclip,mvtec,screw,good,8,0.414794921875,dataset\MVTec\screw/test/good/008.png
-winclip,mvtec,transistor,good,28,0.385009765625,dataset\MVTec\transistor/test/good/028.png
-winclip,visa,cashew,good,213,0.37744140625,dataset\Visa\cashew/Data/Images/Normal/213.JPG
-winclip,visa,cashew,good,13,0.37744140625,dataset\Visa\cashew/Data/Images/Normal/013.JPG
-winclip,visa,macaroni2,good,844,0.3701171875,dataset\Visa\macaroni2/Data/Images/Normal/0844.JPG
-winclip,visa,cashew,good,446,0.363037109375,dataset\Visa\cashew/Data/Images/Normal/446.JPG

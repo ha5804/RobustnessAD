@@ -1,4 +1,0 @@
-dataset,class,defect_type,adaptclip,anomalyclip,winclip,mean_auroc_pct,all_models_low
-visa,pcb2,Anomaly,66.13999999999999,68.94,47.03,60.703333333333326,True
-visa,pcb3,Anomaly,65.46534653465346,76.72277227722772,63.65841584158416,68.61551155115511,True
-visa,macaroni2,Anomaly,71.5,78.02,66.795,72.105,True

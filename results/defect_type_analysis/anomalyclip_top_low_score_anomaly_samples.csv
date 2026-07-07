@@ -1,9 +1,0 @@
-model,dataset,class,defect_type,sample_id,image_score,query_path
-anomalyclip,mvtec,transistor,misplaced,5,0.7419695854187012,dataset\MVTec\transistor/test/misplaced/005.png
-anomalyclip,visa,pcb2,Anomaly,91,0.7487837076187134,dataset\Visa\pcb2/Data/Images/Anomaly/091.JPG
-anomalyclip,visa,pcb2,Anomaly,59,0.7531971335411072,dataset\Visa\pcb2/Data/Images/Anomaly/059.JPG
-anomalyclip,visa,pcb2,Anomaly,38,0.7723166942596436,dataset\Visa\pcb2/Data/Images/Anomaly/038.JPG
-anomalyclip,visa,pcb2,Anomaly,1,0.7751517295837402,dataset\Visa\pcb2/Data/Images/Anomaly/001.JPG
-anomalyclip,visa,pcb2,Anomaly,22,0.7785094380378723,dataset\Visa\pcb2/Data/Images/Anomaly/022.JPG
-anomalyclip,visa,pcb3,Anomaly,43,0.7829018831253052,dataset\Visa\pcb3/Data/Images/Anomaly/043.JPG
-anomalyclip,visa,pcb2,Anomaly,80,0.7874715328216553,dataset\Visa\pcb2/Data/Images/Anomaly/080.JPG

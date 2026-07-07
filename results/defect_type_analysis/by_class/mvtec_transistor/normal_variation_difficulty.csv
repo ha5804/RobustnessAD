@@ -1,4 +1,0 @@
-model,n_normal,mean_normal_score,median_normal_score,p90_normal_score,max_normal_score
-adaptclip,60,0.7394,0.7298,0.8105,0.8778
-anomalyclip,60,0.789,0.7789,0.8661,0.906
-winclip,60,0.2184,0.2069,0.3146,0.5234

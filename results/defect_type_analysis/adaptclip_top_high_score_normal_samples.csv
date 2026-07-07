@@ -1,9 +1,0 @@
-model,dataset,class,defect_type,sample_id,image_score,query_path
-adaptclip,visa,macaroni2,good,545,0.9795451164245604,dataset\Visa\macaroni2/Data/Images/Normal/0545.JPG
-adaptclip,visa,macaroni2,good,178,0.9717803001403807,dataset\Visa\macaroni2/Data/Images/Normal/0178.JPG
-adaptclip,visa,macaroni2,good,11,0.9712063670158386,dataset\Visa\macaroni2/Data/Images/Normal/0011.JPG
-adaptclip,visa,macaroni2,good,377,0.9707691073417664,dataset\Visa\macaroni2/Data/Images/Normal/0377.JPG
-adaptclip,visa,macaroni2,good,768,0.9696821570396424,dataset\Visa\macaroni2/Data/Images/Normal/0768.JPG
-adaptclip,visa,macaroni2,good,844,0.9682354927062988,dataset\Visa\macaroni2/Data/Images/Normal/0844.JPG
-adaptclip,visa,macaroni2,good,24,0.967865824699402,dataset\Visa\macaroni2/Data/Images/Normal/0024.JPG
-adaptclip,visa,macaroni2,good,483,0.9671096205711364,dataset\Visa\macaroni2/Data/Images/Normal/0483.JPG
