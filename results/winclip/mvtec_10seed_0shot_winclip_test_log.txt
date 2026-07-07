@@ -1,0 +1,21 @@
+26-07-07 14:27:31.396 - INFO: 
+
+26-07-07 14:27:31.398 - INFO: Namespace(test_data_path='dataset\\MVTec', save_path='results\\winclip', dataset='mvtec', batch_size=1, num_workers=0, image_size=240, seed=10, sigma=4, k_shots=0, class_name=['bottle', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'tile', 'toothbrush', 'wood', 'zipper'], device='cuda', eval_metrics=['I-AUROC'], evaluator_device='cpu', backbone='ViT-B-16-plus-240', pretrained_dataset='laion400m_e32', scales=[2, 3], precision=None, fusion_version='textual_visual', image_score_mode='global', image_score_topk_ratio=0.01, use_visual_gallery=True, replace_underscore=True, save_heatmap=False, save_difficulty_inputs=False, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, corrupt_prompts=False, sample_csv=None)
+26-07-07 14:27:31.398 - INFO: Using device: cuda
+26-07-07 14:43:41.547 - INFO: Saved sample scores to: results\winclip\bottle.csv, results\winclip\capsule.csv, results\winclip\carpet.csv, results\winclip\grid.csv, results\winclip\hazelnut.csv, results\winclip\leather.csv, results\winclip\metal_nut.csv, results\winclip\tile.csv, results\winclip\toothbrush.csv, results\winclip\wood.csv, results\winclip\zipper.csv
+26-07-07 14:43:41.612 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+|   bottle   |   98.6    |
+|  capsule   |   68.6    |
+|   carpet   |   99.3    |
+|    grid    |   99.2    |
+|  hazelnut  |   92.5    |
+|  leather   |   100.0   |
+| metal_nut  |   95.5    |
+|    tile    |   99.9    |
+| toothbrush |   85.3    |
+|    wood    |   97.6    |
+|   zipper   |   91.0    |
+|    Avg     |   93.4    |
+26-07-07 14:43:41.613 - INFO: Saved class metrics to: results\winclip\class_metrics_mvtec_10seed_0shot.csv

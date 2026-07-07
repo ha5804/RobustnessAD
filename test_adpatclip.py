@@ -132,6 +132,35 @@ def limit_test_samples_per_class(dataset, max_samples_per_class):
     dataset.length = len(limited)
 
 
+def normalize_class_names(class_name):
+    if class_name is None:
+        return None
+    if isinstance(class_name, str):
+        raw_names = [class_name]
+    else:
+        raw_names = class_name
+
+    class_names = []
+    for raw_name in raw_names:
+        for name in str(raw_name).split(","):
+            name = name.strip()
+            if name:
+                class_names.append(name)
+    return class_names or None
+
+
+def filter_results_by_class(results_eval, cls_name):
+    cls_names = results_eval["cls_names"]
+    mask = cls_names == cls_name
+    filtered = {}
+    for key, value in results_eval.items():
+        if key in ["cls_names", "query_paths", "sample_ids"]:
+            filtered[key] = value[mask]
+        else:
+            filtered[key] = value[torch.from_numpy(mask).to(value.device)]
+    return filtered
+
+
 def prompt_association(image_memory, patch_memory, target_class_name):
     patch_level_num = len(patch_memory[target_class_name[0]])
     retrive_image = []
@@ -208,6 +237,7 @@ def build_prompt_memory(model, prompt_dataloader, device, obj_list, view_list, f
 def test(args):
     img_size = args.image_size
     features_list = args.features_list
+    args.class_name = normalize_class_names(args.class_name)
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
     dataset_dir = ensure_meta_json(args.dataset, dataset_dir)
     save_path = resolve_corruption_save_path(
@@ -488,18 +518,20 @@ def test(args):
     results_eval = dict(sample_ids=sample_ids, gt_masks=gt_masks, pr_masks=pr_masks, cls_names=cls_names, gt_anomalys=gt_anomalys, pr_anomalys=pr_anomalys, query_paths=query_paths)
     results_eval = {k: np.concatenate(v, axis=0) if k in ['cls_names', 'query_paths', 'sample_ids']  else torch.cat(v, dim=0) for k, v in results_eval.items()}
     if args.save_sample_scores:
-        sample_score_path = save_path
-        if args.class_name is not None:
-            safe_class_name = str(args.class_name).replace("/", "_").replace("\\", "_")
-            sample_score_path = Path("results") / "model" / f"{safe_class_name}_sample_score"
-        scores_path = save_sample_scores(sample_score_path, dataset_name, seed, k_shots, results_eval)
-        logger.info(f"Saved sample scores to: {scores_path}")
+        sample_score_root = Path(args.save_path)
+        score_paths = []
+        for cls_name in obj_list:
+            safe_class_name = str(cls_name).replace("/", "_").replace("\\", "_")
+            class_results_eval = filter_results_by_class(results_eval, cls_name)
+            scores_path = save_sample_scores(sample_score_root / f"{safe_class_name}.csv", dataset_name, seed, k_shots, class_results_eval)
+            score_paths.append(scores_path)
+        logger.info(f"Saved sample scores to: {', '.join(str(path) for path in score_paths)}")
         # ====================== Save per-sample predictions for difficulty split ======================
     if args.save_difficulty_inputs:
         difficulty_dir = os.path.join(save_path, "difficulty_inputs", dataset_name)
         os.makedirs(difficulty_dir, exist_ok=True)
 
-        target_class = args.class_name if args.class_name is not None else "all"
+        target_class = "_".join(args.class_name) if args.class_name is not None else "all"
         difficulty_path = os.path.join(difficulty_dir, f"{target_class}_predictions.npz")
 
         np.savez_compressed(
@@ -575,7 +607,7 @@ if __name__ == '__main__':
     parser.add_argument("--vl_reduction", type=int, default=4, help="the reduction number of visual learner")
     parser.add_argument("--pq_mid_dim", type=int, default=128, help="the number of the first hidden layer in pqadapter")
     parser.add_argument("--pq_context", action="store_true", help="Enable context feature")
-    parser.add_argument("--class_name", type=str, help="class name for a special dataset, for example, bottle in MVTec")
+    parser.add_argument("--class_name", type=str, nargs="+", help="class name for a special dataset, for example, bottle in MVTec")
     parser.add_argument("--save_heatmap", action="store_true", help="Save anomaly heatmap overlays during testing")
     parser.add_argument("--save_difficulty_inputs", action="store_true", help="Save per-sample predictions for difficulty split")
     parser.add_argument("--save_sample_scores", action="store_true", help="Save per-image anomaly scores for distribution analysis")

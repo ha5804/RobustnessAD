@@ -219,6 +219,35 @@ def limit_test_samples_per_class(dataset, max_samples_per_class):
     dataset.length = len(limited)
 
 
+def normalize_class_names(class_name):
+    if class_name is None:
+        return None
+    if isinstance(class_name, str):
+        raw_names = [class_name]
+    else:
+        raw_names = class_name
+
+    class_names = []
+    for raw_name in raw_names:
+        for name in str(raw_name).split(","):
+            name = name.strip()
+            if name:
+                class_names.append(name)
+    return class_names or None
+
+
+def filter_results_by_class(results_eval, cls_name):
+    cls_names = results_eval["cls_names"]
+    mask = cls_names == cls_name
+    filtered = {}
+    for key, value in results_eval.items():
+        if key in ["cls_names", "query_paths", "sample_ids"]:
+            filtered[key] = value[mask]
+        else:
+            filtered[key] = value[torch.from_numpy(mask).to(value.device)]
+    return filtered
+
+
 def prompt_phrases(category):
     normal_states = [
         "normal {}",
@@ -320,6 +349,7 @@ def predict_batch(model, images, cls_names, text_cache, learned_text_features, a
 
 
 def test(args):
+    args.class_name = normalize_class_names(args.class_name)
     dataset_dir = resolve_dataset_path(args.dataset, args.test_data_path)
     dataset_dir = ensure_meta_json(args.dataset, dataset_dir)
 
@@ -455,13 +485,19 @@ def test(args):
         for key, value in results_eval.items()
     }
     if args.save_sample_scores:
-        scores_path = save_sample_scores(save_path, args.dataset, args.seed, args.k_shots, results_eval)
-        logger.info(f"Saved sample scores to: {scores_path}")
+        sample_score_root = Path(args.save_path)
+        score_paths = []
+        for cls_name in test_data.obj_list:
+            safe_class_name = str(cls_name).replace("/", "_").replace("\\", "_")
+            class_results_eval = filter_results_by_class(results_eval, cls_name)
+            scores_path = save_sample_scores(sample_score_root / f"{safe_class_name}.csv", args.dataset, args.seed, args.k_shots, class_results_eval)
+            score_paths.append(scores_path)
+        logger.info(f"Saved sample scores to: {', '.join(str(path) for path in score_paths)}")
 
     if args.save_difficulty_inputs:
         difficulty_dir = Path(save_path) / "difficulty_inputs" / args.dataset
         difficulty_dir.mkdir(parents=True, exist_ok=True)
-        target_class = args.class_name if args.class_name is not None else "all"
+        target_class = "_".join(args.class_name) if args.class_name is not None else "all"
         difficulty_path = difficulty_dir / f"{target_class}_predictions.npz"
         np.savez_compressed(
             difficulty_path,
@@ -520,7 +556,7 @@ if __name__ == "__main__":
     parser.add_argument("--image_size", type=int, default=518)
     parser.add_argument("--seed", type=int, default=10)
     parser.add_argument("--k_shots", type=int, default=0)
-    parser.add_argument("--class_name", type=str)
+    parser.add_argument("--class_name", type=str, nargs="+")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"])
     parser.add_argument("--eval_metrics", type=str, nargs="+", default=["I-AUROC", "I-AP", "I-F1max", "P-AUROC", "P-AP", "P-F1max", "P-AUPRO"])
     parser.add_argument("--evaluator_device", type=str, default="auto", choices=["auto", "cuda", "cpu"], help="device to run evaluation metrics on")

@@ -118,6 +118,16 @@ def _is_valid_meta_item(item):
     return True
 
 
+def _normalize_class_names(class_name):
+    if class_name is None:
+        return None
+    if isinstance(class_name, str):
+        class_names = [class_name]
+    else:
+        class_names = list(class_name)
+    return [name for name in class_names if name]
+
+
 class Dataset(data.Dataset):
     def __init__(self, root, transform, target_transform, dataset_name, k_shots, save_dir, mode='train', seed=10, class_name=None, corruption=None, corruption_severity=0, sample_csv=None):
         self.root = root
@@ -139,8 +149,9 @@ class Dataset(data.Dataset):
             for cls_name, items in meta_train_info.items()
         }
 
-        if class_name is not None:
-            self.cls_names = [class_name]
+        class_names = _normalize_class_names(class_name)
+        if class_names is not None:
+            self.cls_names = class_names
         else:
             self.cls_names = list(meta_test_info.keys())
 
@@ -257,8 +268,9 @@ class PromptDataset(data.Dataset):
         else:
             meta_train_info = meta_info_json['test']
 
-        if class_name is not None:
-            self.cls_names = [class_name]
+        class_names = _normalize_class_names(class_name)
+        if class_names is not None:
+            self.cls_names = class_names
         else:
             self.cls_names = list(meta_train_info.keys())
         self.obj_list = self.cls_names

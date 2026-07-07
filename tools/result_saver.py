@@ -39,7 +39,11 @@ def save_class_metrics(save_path, dataset_name, seed, k_shots, rows):
 
 
 def save_sample_scores(save_path, dataset_name, seed, k_shots, results_eval):
-    output_path = Path(save_path) / f"sample_scores_{dataset_name}_{seed}seed_{k_shots}shot.csv"
+    save_path = Path(save_path)
+    if save_path.suffix.lower() == ".csv":
+        output_path = save_path
+    else:
+        output_path = save_path / f"sample_scores_{dataset_name}_{seed}seed_{k_shots}shot.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     sample_ids = results_eval["sample_ids"]
