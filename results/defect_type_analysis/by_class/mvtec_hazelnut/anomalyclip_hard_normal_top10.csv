@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+anomalyclip,mvtec,hazelnut,good,5,0.94961816072464,dataset\MVTec\hazelnut/test/good/005.png
+anomalyclip,mvtec,hazelnut,good,13,0.9381005764007568,dataset\MVTec\hazelnut/test/good/013.png
+anomalyclip,mvtec,hazelnut,good,3,0.9373114109039308,dataset\MVTec\hazelnut/test/good/003.png
+anomalyclip,mvtec,hazelnut,good,25,0.9293546676635742,dataset\MVTec\hazelnut/test/good/025.png
+anomalyclip,mvtec,hazelnut,good,20,0.9263857007026672,dataset\MVTec\hazelnut/test/good/020.png
+anomalyclip,mvtec,hazelnut,good,24,0.90968120098114,dataset\MVTec\hazelnut/test/good/024.png
+anomalyclip,mvtec,hazelnut,good,32,0.903921365737915,dataset\MVTec\hazelnut/test/good/032.png
+anomalyclip,mvtec,hazelnut,good,38,0.9035100936889648,dataset\MVTec\hazelnut/test/good/038.png
+anomalyclip,mvtec,hazelnut,good,19,0.9016067981719972,dataset\MVTec\hazelnut/test/good/019.png
+anomalyclip,mvtec,hazelnut,good,33,0.901589810848236,dataset\MVTec\hazelnut/test/good/033.png
