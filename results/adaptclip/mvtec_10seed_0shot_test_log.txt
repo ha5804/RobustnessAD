@@ -61,93 +61,39 @@ loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3ad
 |:------:|:---------:|
 | screw  |   85.9    |
 26-07-07 16:57:53.062 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:26:39.511 - INFO: Using device: mps
-26-07-07 21:26:43.697 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:28:17.897 - INFO: Saved sample scores to: results/adaptclip/carpet.csv
-26-07-07 21:28:18.001 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-| carpet |   100.0   |
-26-07-07 21:28:18.001 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:28:56.883 - INFO: Using device: mps
-26-07-07 21:29:00.241 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:30:46.563 - INFO: Saved sample scores to: results/adaptclip/capsule.csv
-26-07-07 21:30:46.656 - INFO: 
-|  Name   |  I-AUROC  |
-|:-------:|:---------:|
-| capsule |   95.2    |
-26-07-07 21:30:46.656 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:31:20.836 - INFO: Using device: mps
-26-07-07 21:31:24.376 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:32:27.694 - INFO: Saved sample scores to: results/adaptclip/grid.csv
-26-07-07 21:32:27.735 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-|  grid  |   98.9    |
-26-07-07 21:32:27.735 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:32:49.947 - INFO: Using device: mps
-26-07-07 21:32:53.353 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:35:08.409 - INFO: Saved sample scores to: results/adaptclip/pill.csv
-26-07-07 21:35:08.499 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-|  pill  |   86.8    |
-26-07-07 21:35:08.499 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:35:37.926 - INFO: Using device: mps
-26-07-07 21:35:41.362 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:37:03.088 - INFO: Saved sample scores to: results/adaptclip/transistor.csv
-26-07-07 21:37:03.137 - INFO: 
+26-07-07 21:15:00.912 - INFO: Using device: cuda
+26-07-07 21:15:07.641 - INFO: 
+loading model from: checkpoint\adaptclip_mvtec_epoch_15.pth
+26-07-07 21:15:14.850 - INFO: Saved sample scores to: results\adaptclip\toothbrush.csv
+26-07-07 21:15:15.020 - INFO: 
 |    Name    |  I-AUROC  |
 |:----------:|:---------:|
-| transistor |   88.7    |
-26-07-07 21:37:03.138 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:37:31.547 - INFO: Using device: mps
-26-07-07 21:37:34.982 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:39:07.280 - INFO: Saved sample scores to: results/adaptclip/metal_nut.csv
-26-07-07 21:39:07.340 - INFO: 
-|   Name    |  I-AUROC  |
-|:---------:|:---------:|
-| metal_nut |   93.7    |
-26-07-07 21:39:07.340 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:40:29.183 - INFO: Using device: mps
-26-07-07 21:40:32.700 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:41:08.558 - INFO: Saved sample scores to: results/adaptclip/toothbrush.csv
-26-07-07 21:41:08.582 - INFO: 
+| toothbrush |   95.8    |
+26-07-07 21:15:15.020 - INFO: Saved class metrics to: results\adaptclip\class_metrics_mvtec_10seed_0shot.csv
+26-07-07 21:16:06.817 - INFO: Using device: cuda
+26-07-07 21:16:12.212 - INFO: 
+loading model from: checkpoint\adaptclip_visa_epoch_15.pth
+26-07-07 21:16:19.145 - INFO: Saved sample scores to: results\adaptclip\toothbrush.csv
+26-07-07 21:16:19.295 - INFO: 
 |    Name    |  I-AUROC  |
 |:----------:|:---------:|
-| toothbrush |   86.4    |
-26-07-07 21:41:08.583 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:41:21.859 - INFO: Using device: mps
-26-07-07 21:41:25.236 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:43:29.314 - INFO: Saved sample scores to: results/adaptclip/zipper.csv
-26-07-07 21:43:29.420 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-| zipper |   99.3    |
-26-07-07 21:43:29.420 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:45:05.463 - INFO: Using device: mps
-26-07-07 21:45:08.920 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:46:42.573 - INFO: Saved sample scores to: results/adaptclip/tile.csv
-26-07-07 21:46:42.632 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-|  tile  |   99.6    |
-26-07-07 21:46:42.633 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
-26-07-07 21:47:20.410 - INFO: Using device: mps
-26-07-07 21:47:23.896 - INFO: 
-loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_visa_3adapters_batch8/epoch_15.pth
-26-07-07 21:48:28.574 - INFO: Saved sample scores to: results/adaptclip/wood.csv
-26-07-07 21:48:28.617 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-|  wood  |   98.7    |
-26-07-07 21:48:28.617 - INFO: Saved class metrics to: results/adaptclip/class_metrics_mvtec_10seed_0shot.csv
+| toothbrush |   91.9    |
+26-07-07 21:16:19.295 - INFO: Saved class metrics to: results\adaptclip\class_metrics_mvtec_10seed_0shot.csv
+26-07-07 21:19:01.014 - INFO: Using device: cuda
+26-07-07 21:19:06.359 - INFO: 
+loading model from: checkpoint\adaptclip_visa_epoch_15.pth
+26-07-07 21:19:13.239 - INFO: Saved sample scores to: results\adaptclip\toothbrush.csv
+26-07-07 21:19:13.399 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+| toothbrush |   91.9    |
+26-07-07 21:19:13.400 - INFO: Saved class metrics to: results\adaptclip\class_metrics_mvtec_10seed_0shot.csv
+26-07-08 11:13:49.117 - INFO: Using device: cuda
+26-07-08 11:13:55.431 - INFO: 
+loading model from: .\checkpoints\adaptclip\adaptclip\12_4_128_train_on_visa_3adapters_batch8\epoch_15.pth
+26-07-08 11:14:19.014 - INFO: Saved difficulty inputs to: .\results\adaptclip\difficulty_inputs\mvtec\toothbrush_predictions.npz
+26-07-08 11:14:23.274 - INFO: 
+|    Name    |  I-AUROC  |  P-AUROC  |  P-AP  |
+|:----------:|:---------:|:---------:|:------:|
+| toothbrush |   86.4    |   87.7    |  13.5  |
+26-07-08 11:14:23.276 - INFO: Saved class metrics to: results\adaptclip\class_metrics_mvtec_10seed_0shot.csv

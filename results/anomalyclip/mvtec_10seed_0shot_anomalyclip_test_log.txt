@@ -1,32 +1,27 @@
-26-07-07 14:21:25.387 - INFO: 
+26-07-08 11:49:20.689 - INFO: 
 
-26-07-07 14:21:25.387 - INFO: Namespace(test_data_path='dataset\\MVTec', save_path='results\\anomalyclip', dataset='mvtec', pretrained_model='ViT-L/14@336px', checkpoint_path='checkpoint\\anomalyclip_visa_epoch_15.pth', features_list=[6, 12, 18, 24], feature_map_layer=[0, 1, 2, 3], batch_size=1, num_workers=0, image_size=240, seed=10, k_shots=0, class_name=['capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'tile', 'toothbrush', 'wood', 'zipper'], device='cuda', eval_metrics=['I-AUROC'], evaluator_device='cpu', dpam_layer=20, depth=9, n_ctx=12, t_n_ctx=4, ffn=False, temperature=0.07, logit_scale=100.0, sigma=4, object_agnostic=True, save_heatmap=False, save_difficulty_inputs=False, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, sample_csv=None)
-26-07-07 14:21:25.391 - INFO: Using device: cuda
-26-07-07 14:21:30.212 - INFO: Loaded AnomalyCLIP prompt learner from: checkpoint\anomalyclip_visa_epoch_15.pth
-26-07-07 14:23:23.742 - INFO: Saved sample scores to: results\anomalyclip\capsule.csv, results\anomalyclip\carpet.csv, results\anomalyclip\grid.csv, results\anomalyclip\hazelnut.csv, results\anomalyclip\leather.csv, results\anomalyclip\metal_nut.csv, results\anomalyclip\tile.csv, results\anomalyclip\toothbrush.csv, results\anomalyclip\wood.csv, results\anomalyclip\zipper.csv
-26-07-07 14:23:23.781 - INFO: 
+26-07-08 11:49:20.690 - INFO: Namespace(test_data_path='.\\dataset\\MVTec', save_path='.\\results\\anomalyclip', dataset='mvtec', pretrained_model='ViT-L/14@336px', checkpoint_path='.\\checkpoints\\anomalyclip\\9_12_4_multiscale_epoch_15.pth', features_list=[6, 12, 18, 24], feature_map_layer=[0, 1, 2, 3], batch_size=8, num_workers=0, image_size=518, seed=10, k_shots=0, class_name=None, device='cuda', eval_metrics=['I-AUROC'], evaluator_device='cpu', dpam_layer=20, depth=9, n_ctx=12, t_n_ctx=4, ffn=False, temperature=0.07, logit_scale=100.0, sigma=4, object_agnostic=True, save_heatmap=False, save_difficulty_inputs=True, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, sample_csv=None)
+26-07-08 11:49:20.690 - INFO: Using device: cuda
+26-07-08 11:49:25.437 - INFO: Loaded AnomalyCLIP prompt learner from: .\checkpoints\anomalyclip\9_12_4_multiscale_epoch_15.pth
+26-07-08 12:02:03.284 - INFO: Saved sample scores to: results\anomalyclip\bottle.csv, results\anomalyclip\cable.csv, results\anomalyclip\capsule.csv, results\anomalyclip\carpet.csv, results\anomalyclip\grid.csv, results\anomalyclip\hazelnut.csv, results\anomalyclip\leather.csv, results\anomalyclip\metal_nut.csv, results\anomalyclip\pill.csv, results\anomalyclip\screw.csv, results\anomalyclip\tile.csv, results\anomalyclip\toothbrush.csv, results\anomalyclip\transistor.csv, results\anomalyclip\wood.csv, results\anomalyclip\zipper.csv
+26-07-08 12:03:15.682 - INFO: Saved difficulty inputs to: results\anomalyclip\difficulty_inputs\mvtec\all_predictions.npz
+26-07-08 12:03:16.197 - INFO: 
 |    Name    |  I-AUROC  |
 |:----------:|:---------:|
-|  capsule   |   87.5    |
-|   carpet   |   99.4    |
-|    grid    |   97.2    |
-|  hazelnut  |   84.5    |
-|  leather   |   99.9    |
-| metal_nut  |   93.7    |
-|    tile    |   97.8    |
-| toothbrush |   91.4    |
-|    wood    |   98.9    |
-|   zipper   |   79.6    |
-|    Avg     |   93.0    |
-26-07-07 14:23:23.793 - INFO: Saved class metrics to: results\anomalyclip\class_metrics_mvtec_10seed_0shot.csv
-26-07-07 14:44:40.782 - INFO: 
-
-26-07-07 14:44:40.782 - INFO: Namespace(test_data_path='dataset\\MVTec', save_path='results\\anomalyclip', dataset='mvtec', pretrained_model='ViT-L/14@336px', checkpoint_path='checkpoint\\anomalyclip_visa_epoch_15.pth', features_list=[6, 12, 18, 24], feature_map_layer=[0, 1, 2, 3], batch_size=1, num_workers=0, image_size=240, seed=10, k_shots=0, class_name=['bottle'], device='cuda', eval_metrics=['I-AUROC'], evaluator_device='cpu', dpam_layer=20, depth=9, n_ctx=12, t_n_ctx=4, ffn=False, temperature=0.07, logit_scale=100.0, sigma=4, object_agnostic=True, save_heatmap=False, save_difficulty_inputs=False, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, sample_csv=None)
-26-07-07 14:44:40.782 - INFO: Using device: cuda
-26-07-07 14:44:46.879 - INFO: Loaded AnomalyCLIP prompt learner from: checkpoint\anomalyclip_visa_epoch_15.pth
-26-07-07 14:44:55.166 - INFO: Saved sample scores to: results\anomalyclip\bottle.csv
-26-07-07 14:44:55.268 - INFO: 
-|  Name  |  I-AUROC  |
-|:------:|:---------:|
-| bottle |   92.5    |
-26-07-07 14:44:55.278 - INFO: Saved class metrics to: results\anomalyclip\class_metrics_mvtec_10seed_0shot.csv
+|   bottle   |   88.7    |
+|   cable    |   70.3    |
+|  capsule   |   89.5    |
+|   carpet   |   100.0   |
+|    grid    |   97.8    |
+|  hazelnut  |   97.2    |
+|  leather   |   99.8    |
+| metal_nut  |   92.4    |
+|    pill    |   81.1    |
+|   screw    |   82.1    |
+|    tile    |   100.0   |
+| toothbrush |   85.3    |
+| transistor |   93.9    |
+|    wood    |   96.9    |
+|   zipper   |   98.4    |
+|    Avg     |   91.6    |
+26-07-08 12:03:16.201 - INFO: Saved class metrics to: results\anomalyclip\class_metrics_mvtec_10seed_0shot.csv
