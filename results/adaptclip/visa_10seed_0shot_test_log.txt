@@ -1,0 +1,110 @@
+26-07-07 22:00:41.712 - INFO: Using device: mps
+26-07-07 22:00:45.021 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:03:38.739 - INFO: Saved sample scores to: results/adaptclip/candle.csv
+26-07-07 22:03:38.950 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+| candle |   87.4    |
+26-07-07 22:03:38.950 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:36:52.422 - INFO: Using device: mps
+26-07-07 22:36:55.776 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:39:02.849 - INFO: Saved sample scores to: results/adaptclip/capsules.csv
+26-07-07 22:39:02.929 - INFO: 
+|   Name   |  I-AUROC  |
+|:--------:|:---------:|
+| capsules |   93.9    |
+26-07-07 22:39:02.930 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:39:26.457 - INFO: Using device: mps
+26-07-07 22:39:29.752 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:41:30.442 - INFO: Saved sample scores to: results/adaptclip/cashew.csv
+26-07-07 22:41:30.520 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+| cashew |   86.1    |
+26-07-07 22:41:30.520 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:42:00.421 - INFO: Using device: mps
+26-07-07 22:42:41.445 - INFO: Using device: mps
+26-07-07 22:42:44.601 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:44:44.645 - INFO: Saved sample scores to: results/adaptclip/chewinggum.csv
+26-07-07 22:44:44.720 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+| chewinggum |   96.7    |
+26-07-07 22:44:44.721 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:45:54.402 - INFO: Using device: mps
+26-07-07 22:46:34.105 - INFO: Using device: mps
+26-07-07 22:46:37.292 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:48:37.155 - INFO: Saved sample scores to: results/adaptclip/fryum.csv
+26-07-07 22:48:37.229 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+| fryum  |   91.5    |
+26-07-07 22:48:37.229 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:49:50.124 - INFO: Using device: mps
+26-07-07 22:49:53.538 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:52:33.576 - INFO: Saved sample scores to: results/adaptclip/macaroni1.csv
+26-07-07 22:52:33.696 - INFO: 
+|   Name    |  I-AUROC  |
+|:---------:|:---------:|
+| macaroni1 |   83.3    |
+26-07-07 22:52:33.697 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:53:33.278 - INFO: Using device: mps
+26-07-07 22:53:36.622 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 22:56:16.229 - INFO: Saved sample scores to: results/adaptclip/macaroni2.csv
+26-07-07 22:56:16.334 - INFO: 
+|   Name    |  I-AUROC  |
+|:---------:|:---------:|
+| macaroni2 |   69.9    |
+26-07-07 22:56:16.335 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 22:59:38.526 - INFO: Using device: mps
+26-07-07 22:59:41.820 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 23:02:21.150 - INFO: Saved sample scores to: results/adaptclip/pcb1.csv
+26-07-07 23:02:21.247 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+|  pcb1  |   84.1    |
+26-07-07 23:02:21.247 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 23:03:53.940 - INFO: Using device: mps
+26-07-07 23:03:57.363 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 23:06:40.729 - INFO: Saved sample scores to: results/adaptclip/pcb2.csv
+26-07-07 23:06:40.881 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+|  pcb2  |   64.6    |
+26-07-07 23:06:40.881 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 23:06:58.517 - INFO: Using device: mps
+26-07-07 23:07:01.921 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 23:09:42.988 - INFO: Saved sample scores to: results/adaptclip/pcb3.csv
+26-07-07 23:09:43.124 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+|  pcb3  |   65.3    |
+26-07-07 23:09:43.125 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 23:10:03.208 - INFO: Using device: mps
+26-07-07 23:10:06.609 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 23:12:45.026 - INFO: Saved sample scores to: results/adaptclip/pcb4.csv
+26-07-07 23:12:45.174 - INFO: 
+|  Name  |  I-AUROC  |
+|:------:|:---------:|
+|  pcb4  |   97.7    |
+26-07-07 23:12:45.174 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
+26-07-07 23:20:44.311 - INFO: Using device: mps
+26-07-07 23:20:47.662 - INFO: 
+loading model from: ./checkpoints/adaptclip/adaptclip/12_4_128_train_on_mvtec_3adapters_batch8/epoch_15.pth
+26-07-07 23:22:46.862 - INFO: Saved sample scores to: results/adaptclip/pipe_fryum.csv
+26-07-07 23:22:46.952 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+| pipe_fryum |   96.7    |
+26-07-07 23:22:46.954 - INFO: Saved class metrics to: results/adaptclip/class_metrics_visa_10seed_0shot.csv
