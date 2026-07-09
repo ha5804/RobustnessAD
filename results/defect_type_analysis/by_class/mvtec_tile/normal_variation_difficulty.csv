@@ -1,0 +1,4 @@
+model,n_normal,mean_normal_score,median_normal_score,std_normal_score,mad_normal_score,min_normal_score,p10_normal_score,p25_normal_score,p75_normal_score,p90_normal_score,p95_normal_score,max_normal_score,iqr_normal_score,p90_p10_normal_score,max_median_normal_score
+adaptclip,33,0.2502,0.2036,0.1175,0.0345,0.1538,0.1686,0.1775,0.2615,0.3536,0.5492,0.632,0.084,0.185,0.4285
+anomalyclip,33,0.8138,0.8161,0.0436,0.037,0.7355,0.7573,0.7791,0.8495,0.8649,0.8803,0.9003,0.0704,0.1076,0.0842
+winclip,33,0.0099,0.0086,0.0039,0.0019,0.0055,0.0065,0.0077,0.0108,0.0133,0.0171,0.0252,0.0031,0.0068,0.0166

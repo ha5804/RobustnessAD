@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,cable,missing_cable,6.0,0.7895283699035645,dataset/MVTec/cable/test/missing_cable/006.png
+adaptclip,mvtec,cable,missing_cable,5.0,0.8084427714347839,dataset/MVTec/cable/test/missing_cable/005.png
+adaptclip,mvtec,cable,cable_swap,3.0,0.8137920498847961,dataset/MVTec/cable/test/cable_swap/003.png
+adaptclip,mvtec,cable,missing_cable,10.0,0.8156606554985046,dataset/MVTec/cable/test/missing_cable/010.png
+adaptclip,mvtec,cable,bent_wire,1.0,0.8170428276062012,dataset/MVTec/cable/test/bent_wire/001.png
+adaptclip,mvtec,cable,bent_wire,10.0,0.8196017146110535,dataset/MVTec/cable/test/bent_wire/010.png
+adaptclip,mvtec,cable,cut_inner_insulation,8.0,0.8200628757476807,dataset/MVTec/cable/test/cut_inner_insulation/008.png
+adaptclip,mvtec,cable,missing_wire,6.0,0.8210905194282532,dataset/MVTec/cable/test/missing_wire/006.png
+adaptclip,mvtec,cable,missing_cable,8.0,0.8225215077400208,dataset/MVTec/cable/test/missing_cable/008.png
+adaptclip,mvtec,cable,cut_inner_insulation,4.0,0.8234308362007141,dataset/MVTec/cable/test/cut_inner_insulation/004.png

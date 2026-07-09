@@ -1,0 +1,16 @@
+model,defect_type,defect_auroc,mean_defect_score,model_median_defect_score,confidence_margin_vs_model_median,mean_good_score,score_gap,bottom_anomaly_score,n_defect,well_ranked_but_weakly_activated
+winclip,metal_contamination,96.63865546218487,0.1834,0.3042,-0.1208,0.0362,0.1471,0.0373,17,True
+adaptclip,metal_contamination,100.0,0.517,0.5875,-0.0706,0.1278,0.3892,0.3073,17,True
+winclip,thread,99.81203007518798,0.2846,0.3042,-0.0196,0.0362,0.2484,0.0851,19,True
+adaptclip,thread,100.0,0.5744,0.5875,-0.0132,0.1278,0.4466,0.2495,19,True
+anomalyclip,thread,100.0,0.7157,0.7282,-0.0124,0.2206,0.4951,0.3186,19,True
+anomalyclip,hole,99.78991596638656,0.719,0.7282,-0.0091,0.2206,0.4984,0.2814,17,True
+adaptclip,cut,100.0,0.5875,0.5875,0.0,0.1278,0.4597,0.2179,17,True
+anomalyclip,cut,100.0,0.7282,0.7282,0.0,0.2206,0.5075,0.3923,17,True
+winclip,hole,100.0,0.3042,0.3042,0.0,0.0362,0.268,0.1384,17,True
+adaptclip,hole,100.0,0.5947,0.5875,0.0072,0.1278,0.4669,0.2338,17,False
+adaptclip,color,100.0,0.6027,0.5875,0.0151,0.1278,0.4748,0.3752,19,False
+winclip,cut,100.0,0.3595,0.3042,0.0553,0.0362,0.3233,0.1067,17,False
+anomalyclip,color,100.0,0.8213,0.7282,0.0931,0.2206,0.6007,0.5552,19,False
+anomalyclip,metal_contamination,100.0,0.8215,0.7282,0.0934,0.2206,0.6009,0.4908,17,False
+winclip,color,100.0,0.4774,0.3042,0.1732,0.0362,0.4411,0.2338,19,False

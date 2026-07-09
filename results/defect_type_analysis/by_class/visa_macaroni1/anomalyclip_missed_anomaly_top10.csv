@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+anomalyclip,visa,macaroni1,Anomaly,97.0,0.9177060723304749,dataset\Visa\macaroni1/Data/Images/Anomaly/097.JPG
+anomalyclip,visa,macaroni1,Anomaly,0.0,0.9218726754188538,dataset\Visa\macaroni1/Data/Images/Anomaly/000.JPG
+anomalyclip,visa,macaroni1,Anomaly,1.0,0.92571622133255,dataset\Visa\macaroni1/Data/Images/Anomaly/001.JPG
+anomalyclip,visa,macaroni1,Anomaly,6.0,0.9264858961105348,dataset\Visa\macaroni1/Data/Images/Anomaly/006.JPG
+anomalyclip,visa,macaroni1,Anomaly,83.0,0.929566204547882,dataset\Visa\macaroni1/Data/Images/Anomaly/083.JPG
+anomalyclip,visa,macaroni1,Anomaly,35.0,0.9305159449577332,dataset\Visa\macaroni1/Data/Images/Anomaly/035.JPG
+anomalyclip,visa,macaroni1,Anomaly,17.0,0.9315966963768004,dataset\Visa\macaroni1/Data/Images/Anomaly/017.JPG
+anomalyclip,visa,macaroni1,Anomaly,20.0,0.9340742826461792,dataset\Visa\macaroni1/Data/Images/Anomaly/020.JPG
+anomalyclip,visa,macaroni1,Anomaly,70.0,0.9347623586654664,dataset\Visa\macaroni1/Data/Images/Anomaly/070.JPG
+anomalyclip,visa,macaroni1,Anomaly,88.0,0.9355536103248596,dataset\Visa\macaroni1/Data/Images/Anomaly/088.JPG

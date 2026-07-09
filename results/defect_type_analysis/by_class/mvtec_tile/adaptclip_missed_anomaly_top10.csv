@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,tile,rough,5.0,0.3623068332672119,dataset/MVTec/tile/test/rough/005.png
+adaptclip,mvtec,tile,gray_stroke,12.0,0.5063628554344177,dataset/MVTec/tile/test/gray_stroke/012.png
+adaptclip,mvtec,tile,rough,6.0,0.5139532089233398,dataset/MVTec/tile/test/rough/006.png
+adaptclip,mvtec,tile,rough,14.0,0.5977442860603333,dataset/MVTec/tile/test/rough/014.png
+adaptclip,mvtec,tile,rough,4.0,0.7273053526878357,dataset/MVTec/tile/test/rough/004.png
+adaptclip,mvtec,tile,rough,8.0,0.7344852089881897,dataset/MVTec/tile/test/rough/008.png
+adaptclip,mvtec,tile,gray_stroke,2.0,0.7500151991844177,dataset/MVTec/tile/test/gray_stroke/002.png
+adaptclip,mvtec,tile,rough,12.0,0.7693299651145935,dataset/MVTec/tile/test/rough/012.png
+adaptclip,mvtec,tile,crack,3.0,0.7737966179847717,dataset/MVTec/tile/test/crack/003.png
+adaptclip,mvtec,tile,crack,2.0,0.7761955261230469,dataset/MVTec/tile/test/crack/002.png

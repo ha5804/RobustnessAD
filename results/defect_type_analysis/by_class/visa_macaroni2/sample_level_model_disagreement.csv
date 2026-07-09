@@ -1,0 +1,1 @@
+dataset,class,defect_type,sample_id,label,query_path,adaptclip,anomalyclip,winclip,score_range_across_models,abs_diff_adaptclip_vs_anomalyclip,abs_diff_adaptclip_vs_winclip,abs_diff_anomalyclip_vs_winclip

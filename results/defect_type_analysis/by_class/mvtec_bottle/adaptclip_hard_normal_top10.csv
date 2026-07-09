@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,bottle,good,1.0,0.940912425518036,dataset/MVTec/bottle/test/good/001.png
+adaptclip,mvtec,bottle,good,15.0,0.933094322681427,dataset/MVTec/bottle/test/good/015.png
+adaptclip,mvtec,bottle,good,19.0,0.9001120924949646,dataset/MVTec/bottle/test/good/019.png
+adaptclip,mvtec,bottle,good,3.0,0.8838818073272705,dataset/MVTec/bottle/test/good/003.png
+adaptclip,mvtec,bottle,good,18.0,0.8809160590171814,dataset/MVTec/bottle/test/good/018.png
+adaptclip,mvtec,bottle,good,9.0,0.8801407814025879,dataset/MVTec/bottle/test/good/009.png
+adaptclip,mvtec,bottle,good,14.0,0.8786358833312988,dataset/MVTec/bottle/test/good/014.png
+adaptclip,mvtec,bottle,good,8.0,0.8565903306007385,dataset/MVTec/bottle/test/good/008.png
+adaptclip,mvtec,bottle,good,4.0,0.8553734421730042,dataset/MVTec/bottle/test/good/004.png
+adaptclip,mvtec,bottle,good,2.0,0.8539847731590271,dataset/MVTec/bottle/test/good/002.png

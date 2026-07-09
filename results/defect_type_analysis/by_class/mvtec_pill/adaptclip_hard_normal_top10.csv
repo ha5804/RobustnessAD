@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,pill,good,19.0,0.7913864254951477,dataset/MVTec/pill/test/good/019.png
+adaptclip,mvtec,pill,good,14.0,0.7287907004356384,dataset/MVTec/pill/test/good/014.png
+adaptclip,mvtec,pill,good,22.0,0.6891098022460938,dataset/MVTec/pill/test/good/022.png
+adaptclip,mvtec,pill,good,23.0,0.577951967716217,dataset/MVTec/pill/test/good/023.png
+adaptclip,mvtec,pill,good,10.0,0.5772407054901123,dataset/MVTec/pill/test/good/010.png
+adaptclip,mvtec,pill,good,3.0,0.5748360753059387,dataset/MVTec/pill/test/good/003.png
+adaptclip,mvtec,pill,good,8.0,0.5677417516708374,dataset/MVTec/pill/test/good/008.png
+adaptclip,mvtec,pill,good,12.0,0.5605705380439758,dataset/MVTec/pill/test/good/012.png
+adaptclip,mvtec,pill,good,2.0,0.5219361782073975,dataset/MVTec/pill/test/good/002.png
+adaptclip,mvtec,pill,good,6.0,0.518100917339325,dataset/MVTec/pill/test/good/006.png

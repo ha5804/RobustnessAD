@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+anomalyclip,mvtec,tile,rough,6.0,0.914119839668274,dataset\MVTec\tile/test/rough/006.png
+anomalyclip,mvtec,tile,gray_stroke,12.0,0.9144256711006165,dataset\MVTec\tile/test/gray_stroke/012.png
+anomalyclip,mvtec,tile,rough,14.0,0.9380715489387512,dataset\MVTec\tile/test/rough/014.png
+anomalyclip,mvtec,tile,rough,5.0,0.938468873500824,dataset\MVTec\tile/test/rough/005.png
+anomalyclip,mvtec,tile,gray_stroke,2.0,0.9509708285331726,dataset\MVTec\tile/test/gray_stroke/002.png
+anomalyclip,mvtec,tile,rough,4.0,0.9594197869300842,dataset\MVTec\tile/test/rough/004.png
+anomalyclip,mvtec,tile,gray_stroke,11.0,0.9595197439193726,dataset\MVTec\tile/test/gray_stroke/011.png
+anomalyclip,mvtec,tile,crack,5.0,0.9630802273750304,dataset\MVTec\tile/test/crack/005.png
+anomalyclip,mvtec,tile,rough,12.0,0.96308696269989,dataset\MVTec\tile/test/rough/012.png
+anomalyclip,mvtec,tile,gray_stroke,13.0,0.9641996026039124,dataset\MVTec\tile/test/gray_stroke/013.png

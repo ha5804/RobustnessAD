@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,visa,pcb2,Anomaly,59.0,0.4434863626956939,dataset/Visa/pcb2/Data/Images/Anomaly/059.JPG
+adaptclip,visa,pcb2,Anomaly,91.0,0.480126142501831,dataset/Visa/pcb2/Data/Images/Anomaly/091.JPG
+adaptclip,visa,pcb2,Anomaly,12.0,0.5559792518615723,dataset/Visa/pcb2/Data/Images/Anomaly/012.JPG
+adaptclip,visa,pcb2,Anomaly,1.0,0.5653932690620422,dataset/Visa/pcb2/Data/Images/Anomaly/001.JPG
+adaptclip,visa,pcb2,Anomaly,9.0,0.6090661883354187,dataset/Visa/pcb2/Data/Images/Anomaly/009.JPG
+adaptclip,visa,pcb2,Anomaly,38.0,0.6202223896980286,dataset/Visa/pcb2/Data/Images/Anomaly/038.JPG
+adaptclip,visa,pcb2,Anomaly,51.0,0.62839275598526,dataset/Visa/pcb2/Data/Images/Anomaly/051.JPG
+adaptclip,visa,pcb2,Anomaly,22.0,0.6331366896629333,dataset/Visa/pcb2/Data/Images/Anomaly/022.JPG
+adaptclip,visa,pcb2,Anomaly,72.0,0.6431670784950256,dataset/Visa/pcb2/Data/Images/Anomaly/072.JPG
+adaptclip,visa,pcb2,Anomaly,31.0,0.6447855830192566,dataset/Visa/pcb2/Data/Images/Anomaly/031.JPG

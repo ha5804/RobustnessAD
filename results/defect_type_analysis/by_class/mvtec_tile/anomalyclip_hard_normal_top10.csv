@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+anomalyclip,mvtec,tile,good,19.0,0.9003133177757263,dataset\MVTec\tile/test/good/019.png
+anomalyclip,mvtec,tile,good,15.0,0.882847785949707,dataset\MVTec\tile/test/good/015.png
+anomalyclip,mvtec,tile,good,1.0,0.8786223530769348,dataset\MVTec\tile/test/good/001.png
+anomalyclip,mvtec,tile,good,29.0,0.8662455677986145,dataset\MVTec\tile/test/good/029.png
+anomalyclip,mvtec,tile,good,18.0,0.8594874739646912,dataset\MVTec\tile/test/good/018.png
+anomalyclip,mvtec,tile,good,6.0,0.858893871307373,dataset\MVTec\tile/test/good/006.png
+anomalyclip,mvtec,tile,good,4.0,0.8570390939712524,dataset\MVTec\tile/test/good/004.png
+anomalyclip,mvtec,tile,good,17.0,0.8550191521644592,dataset\MVTec\tile/test/good/017.png
+anomalyclip,mvtec,tile,good,27.0,0.8495492935180664,dataset\MVTec\tile/test/good/027.png
+anomalyclip,mvtec,tile,good,9.0,0.8468769788742065,dataset\MVTec\tile/test/good/009.png

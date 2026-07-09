@@ -1,0 +1,4 @@
+model,defect_type,defect_auroc,mean_defect_score,model_median_defect_score,confidence_margin_vs_model_median,mean_good_score,score_gap,bottom_anomaly_score,n_defect,well_ranked_but_weakly_activated
+anomalyclip,Anomaly,86.74000000000001,0.9555,0.9555,0.0,0.9218,0.0337,0.9177,100,False
+adaptclip,Anomaly,83.27,0.5109,0.5109,0.0,0.4143,0.0966,0.3607,100,False
+winclip,Anomaly,78.83,0.075,0.075,0.0,0.0496,0.0254,0.0311,100,False

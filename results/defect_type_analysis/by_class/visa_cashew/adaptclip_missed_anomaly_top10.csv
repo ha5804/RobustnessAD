@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,visa,cashew,Anomaly,56.0,0.2461587637662887,dataset/Visa/cashew/Data/Images/Anomaly/056.JPG
+adaptclip,visa,cashew,Anomaly,48.0,0.2889168560504913,dataset/Visa/cashew/Data/Images/Anomaly/048.JPG
+adaptclip,visa,cashew,Anomaly,87.0,0.3014346957206726,dataset/Visa/cashew/Data/Images/Anomaly/087.JPG
+adaptclip,visa,cashew,Anomaly,92.0,0.3105170428752899,dataset/Visa/cashew/Data/Images/Anomaly/092.JPG
+adaptclip,visa,cashew,Anomaly,85.0,0.3200548589229584,dataset/Visa/cashew/Data/Images/Anomaly/085.JPG
+adaptclip,visa,cashew,Anomaly,78.0,0.3269154727458954,dataset/Visa/cashew/Data/Images/Anomaly/078.JPG
+adaptclip,visa,cashew,Anomaly,88.0,0.3341269493103027,dataset/Visa/cashew/Data/Images/Anomaly/088.JPG
+adaptclip,visa,cashew,Anomaly,55.0,0.3382024765014648,dataset/Visa/cashew/Data/Images/Anomaly/055.JPG
+adaptclip,visa,cashew,Anomaly,51.0,0.3462705612182617,dataset/Visa/cashew/Data/Images/Anomaly/051.JPG
+adaptclip,visa,cashew,Anomaly,53.0,0.3542249202728271,dataset/Visa/cashew/Data/Images/Anomaly/053.JPG

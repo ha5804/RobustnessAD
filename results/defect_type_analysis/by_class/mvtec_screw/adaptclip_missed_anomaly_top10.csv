@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,screw,scratch_neck,5.0,0.7557036876678467,dataset/MVTec/screw/test/scratch_neck/005.png
+adaptclip,mvtec,screw,thread_side,9.0,0.7766056060791016,dataset/MVTec/screw/test/thread_side/009.png
+adaptclip,mvtec,screw,manipulated_front,20.0,0.7986085414886475,dataset/MVTec/screw/test/manipulated_front/020.png
+adaptclip,mvtec,screw,thread_side,3.0,0.8025445342063904,dataset/MVTec/screw/test/thread_side/003.png
+adaptclip,mvtec,screw,scratch_neck,23.0,0.8035545349121094,dataset/MVTec/screw/test/scratch_neck/023.png
+adaptclip,mvtec,screw,thread_side,19.0,0.8048639893531799,dataset/MVTec/screw/test/thread_side/019.png
+adaptclip,mvtec,screw,scratch_neck,22.0,0.8071355819702148,dataset/MVTec/screw/test/scratch_neck/022.png
+adaptclip,mvtec,screw,scratch_head,4.0,0.8136000633239746,dataset/MVTec/screw/test/scratch_head/004.png
+adaptclip,mvtec,screw,thread_side,0.0,0.8137500882148743,dataset/MVTec/screw/test/thread_side/000.png
+adaptclip,mvtec,screw,thread_top,14.0,0.8145461678504944,dataset/MVTec/screw/test/thread_top/014.png

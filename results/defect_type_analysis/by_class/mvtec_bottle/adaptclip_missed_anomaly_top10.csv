@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,bottle,contamination,13.0,0.8279402852058411,dataset/MVTec/bottle/test/contamination/013.png
+adaptclip,mvtec,bottle,contamination,19.0,0.8324277997016907,dataset/MVTec/bottle/test/contamination/019.png
+adaptclip,mvtec,bottle,contamination,16.0,0.8424193263053894,dataset/MVTec/bottle/test/contamination/016.png
+adaptclip,mvtec,bottle,contamination,20.0,0.8508914113044739,dataset/MVTec/bottle/test/contamination/020.png
+adaptclip,mvtec,bottle,contamination,10.0,0.8555814623832703,dataset/MVTec/bottle/test/contamination/010.png
+adaptclip,mvtec,bottle,contamination,12.0,0.8679080605506897,dataset/MVTec/bottle/test/contamination/012.png
+adaptclip,mvtec,bottle,contamination,3.0,0.8712736964225769,dataset/MVTec/bottle/test/contamination/003.png
+adaptclip,mvtec,bottle,contamination,6.0,0.8755879402160645,dataset/MVTec/bottle/test/contamination/006.png
+adaptclip,mvtec,bottle,contamination,4.0,0.8787702918052673,dataset/MVTec/bottle/test/contamination/004.png
+adaptclip,mvtec,bottle,contamination,9.0,0.8831818699836731,dataset/MVTec/bottle/test/contamination/009.png

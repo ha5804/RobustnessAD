@@ -1,0 +1,10 @@
+model,defect_type,defect_auroc,mean_defect_score,model_median_defect_score,confidence_margin_vs_model_median,mean_good_score,score_gap,bottom_anomaly_score,n_defect,well_ranked_but_weakly_activated
+winclip,contamination,95.95238095238095,0.2165,0.3975,-0.181,0.0469,0.1696,0.0526,21,True
+winclip,broken_small,99.77272727272728,0.3975,0.3975,0.0,0.0469,0.3507,0.0792,22,True
+adaptclip,broken_large,99.0,0.9632,0.9632,0.0,0.8585,0.1047,0.9231,20,True
+anomalyclip,broken_large,95.5,0.9978,0.9978,0.0,0.9925,0.0053,0.9915,20,True
+adaptclip,contamination,73.09523809523809,0.8902,0.9632,-0.073,0.8585,0.0317,0.8279,21,False
+anomalyclip,contamination,70.71428571428571,0.9944,0.9978,-0.0034,0.9925,0.0019,0.9866,21,False
+anomalyclip,broken_small,99.54545454545453,0.9985,0.9978,0.0008,0.9925,0.0061,0.9966,22,False
+adaptclip,broken_small,100.0,0.9713,0.9632,0.0082,0.8585,0.1128,0.9469,22,False
+winclip,broken_large,100.0,0.5815,0.3975,0.184,0.0469,0.5347,0.2095,20,False

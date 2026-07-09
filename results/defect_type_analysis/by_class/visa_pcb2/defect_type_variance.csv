@@ -1,0 +1,4 @@
+model,defect_type,defect_auroc,n_defect,mean_defect_score,std_defect_score,iqr_defect_score,range_defect_score,bottom_anomaly_score,top_anomaly_score
+adaptclip,Anomaly,64.62,100,0.7672,0.0972,0.1401,0.5042,0.4435,0.9477
+anomalyclip,Anomaly,62.050000000000004,100,0.8864,0.0319,0.0352,0.1652,0.8014,0.9665
+winclip,Anomaly,47.03,100,0.1463,0.0339,0.0528,0.1735,0.0716,0.2451

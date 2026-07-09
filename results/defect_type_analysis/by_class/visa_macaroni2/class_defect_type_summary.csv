@@ -1,0 +1,4 @@
+model,dataset,class,defect_type,class_auroc,defect_auroc,n_good,n_defect,mean_good_score,mean_defect_score,score_gap,std_good_score,std_defect_score,iqr_defect_score,range_defect_score,bottom_anomaly_score,top_anomaly_score,top_normal_score,rank_low_to_high,low_auroc
+adaptclip,visa,macaroni2,Anomaly,69.91,69.91,100,100,0.9238,0.9576,0.0338,0.0806,0.0154,0.0188,0.0759,0.9012,0.9771,0.9799,1,True
+anomalyclip,visa,macaroni2,Anomaly,72.21000000000001,72.21000000000001,100,100,0.9921,0.9945,0.0024,0.0041,0.003,0.0031,0.0146,0.9837,0.9983,0.9984,1,True
+winclip,visa,macaroni2,Anomaly,66.795,66.795,100,100,0.1062,0.1364,0.0302,0.0528,0.0584,0.0716,0.2815,0.0496,0.3311,0.3701,1,True

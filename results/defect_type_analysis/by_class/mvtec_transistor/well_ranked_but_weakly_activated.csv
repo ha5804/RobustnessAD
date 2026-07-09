@@ -1,0 +1,13 @@
+model,defect_type,defect_auroc,mean_defect_score,model_median_defect_score,confidence_margin_vs_model_median,mean_good_score,score_gap,bottom_anomaly_score,n_defect,well_ranked_but_weakly_activated
+anomalyclip,misplaced,90.49999999999999,0.9503,0.9556,-0.0053,0.9025,0.0478,0.9054,10,True
+anomalyclip,bent_lead,94.83333333333333,0.9542,0.9556,-0.0014,0.9025,0.0517,0.9194,10,True
+winclip,cut_lead,78.75000000000001,0.2934,0.4068,-0.1134,0.2184,0.075,0.1871,10,False
+winclip,bent_lead,88.25,0.3585,0.4068,-0.0484,0.2184,0.1401,0.1968,10,False
+adaptclip,misplaced,78.16666666666666,0.8086,0.8325,-0.0238,0.7394,0.0692,0.687,10,False
+adaptclip,cut_lead,84.83333333333334,0.8245,0.8325,-0.008,0.7394,0.0851,0.7391,10,False
+anomalyclip,cut_lead,95.66666666666667,0.9571,0.9556,0.0014,0.9025,0.0545,0.9303,10,False
+anomalyclip,damaged_case,94.5,0.96,0.9556,0.0044,0.9025,0.0575,0.9203,10,False
+adaptclip,bent_lead,92.16666666666666,0.8404,0.8325,0.008,0.7394,0.101,0.7692,10,False
+winclip,damaged_case,95.08333333333333,0.4552,0.4068,0.0484,0.2184,0.2368,0.2751,10,False
+adaptclip,damaged_case,99.5,0.9038,0.8325,0.0713,0.7394,0.1644,0.8476,10,False
+winclip,misplaced,95.33333333333334,0.4866,0.4068,0.0798,0.2184,0.2682,0.272,10,False

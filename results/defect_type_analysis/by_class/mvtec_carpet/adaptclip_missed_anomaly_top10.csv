@@ -1,0 +1,11 @@
+model,dataset,class,defect_type,sample_id,image_score,query_path
+adaptclip,mvtec,carpet,cut,16.0,0.2179276943206787,dataset/MVTec/carpet/test/cut/016.png
+adaptclip,mvtec,carpet,hole,1.0,0.2338085174560547,dataset/MVTec/carpet/test/hole/001.png
+adaptclip,mvtec,carpet,hole,12.0,0.2482144683599472,dataset/MVTec/carpet/test/hole/012.png
+adaptclip,mvtec,carpet,thread,14.0,0.2495362013578415,dataset/MVTec/carpet/test/thread/014.png
+adaptclip,mvtec,carpet,thread,1.0,0.2949333190917969,dataset/MVTec/carpet/test/thread/001.png
+adaptclip,mvtec,carpet,metal_contamination,11.0,0.3073071539402008,dataset/MVTec/carpet/test/metal_contamination/011.png
+adaptclip,mvtec,carpet,hole,0.0,0.3097931444644928,dataset/MVTec/carpet/test/hole/000.png
+adaptclip,mvtec,carpet,thread,9.0,0.3209947645664215,dataset/MVTec/carpet/test/thread/009.png
+adaptclip,mvtec,carpet,cut,8.0,0.3311193883419037,dataset/MVTec/carpet/test/cut/008.png
+adaptclip,mvtec,carpet,metal_contamination,0.0,0.3316833674907684,dataset/MVTec/carpet/test/metal_contamination/000.png
