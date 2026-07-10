@@ -1,4 +1,0 @@
-model,dataset,class,defect_type,class_auroc,defect_auroc,n_good,n_defect,mean_good_score,mean_defect_score,score_gap,std_good_score,std_defect_score,iqr_defect_score,range_defect_score,bottom_anomaly_score,top_anomaly_score,top_normal_score,rank_low_to_high,low_auroc
-adaptclip,visa,pcb2,Anomaly,64.62,64.62,100,100,0.7057,0.7672,0.0614,0.115,0.0972,0.1401,0.5042,0.4435,0.9477,0.8823,1,True
-anomalyclip,visa,pcb2,Anomaly,62.050000000000004,62.050000000000004,100,100,0.8721,0.8864,0.0143,0.027,0.0319,0.0352,0.1652,0.8014,0.9665,0.9272,1,True
-winclip,visa,pcb2,Anomaly,47.03,47.03,100,100,0.1524,0.1463,-0.0061,0.0443,0.0339,0.0528,0.1735,0.0716,0.2451,0.2815,1,True
