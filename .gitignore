@@ -1,14 +1,55 @@
-__pycache__/
-.ipynb_checkpoints/
+# OS / editor files
 .DS_Store
-*.tar.gz
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python bytecode, caches, and tooling
+__pycache__/
 *.py[cod]
 *$py.class
-.vscode/
-*.vscode
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.numba_cache/
+.matplotlib/
+.cache/
+pip/cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local configuration
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+.python-version
+.lesshst
+.gitconfig
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks *-*-*-*/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Archives, generated images, and model weights
+*.tar.gz
+*.zip
 *.png
-*.pth
 *.jpg
+*.jpeg
+*.pth
+*.pt
+*.ckpt
 checkpoints/
 adaptclip_checkpoints/
 adaclip_checkpoints/
@@ -30,4 +71,8 @@ dataset/VisA_corruption
 dataset/BTAD_corruption
 difficulty_splits/
 overleaf_tables/
-.cache/*
+results/
+results_corruption/
+.matplotlib/
+analysis/
+pip/cache/

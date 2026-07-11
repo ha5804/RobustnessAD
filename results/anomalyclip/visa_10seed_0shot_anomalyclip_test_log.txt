@@ -50,3 +50,25 @@
 | pipe_fryum |   92.3    |
 |    Avg     |   82.0    |
 26-07-08 12:29:39.521 - INFO: Saved class metrics to: results\anomalyclip\class_metrics_visa_10seed_0shot.csv
+26-07-10 17:09:00.483 - INFO: 
+
+26-07-10 17:09:00.483 - INFO: Namespace(test_data_path='./dataset/Visa', save_path='./results/anomalyclip', dataset='visa', pretrained_model='ViT-L/14@336px', checkpoint_path='./checkpoints/anomalyclip/9_12_4_multiscale_epoch_15.pth', features_list=[6, 12, 18, 24], feature_map_layer=[0, 1, 2, 3], batch_size=1, num_workers=0, image_size=518, seed=10, k_shots=0, class_name=['pipe_fryum'], device='mps', eval_metrics=['I-AUROC'], evaluator_device='cpu', dpam_layer=20, depth=9, n_ctx=12, t_n_ctx=4, ffn=False, temperature=0.07, logit_scale=100.0, sigma=4, object_agnostic=True, save_heatmap=False, save_difficulty_inputs=False, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, sample_csv=None)
+26-07-10 17:09:00.597 - INFO: Using device: mps
+26-07-10 17:09:05.489 - INFO: Loaded AnomalyCLIP prompt learner from: ./checkpoints/anomalyclip/9_12_4_multiscale_epoch_15.pth
+26-07-10 17:11:07.260 - INFO: Saved sample scores to: results/anomalyclip/pipe_fryum.csv
+26-07-10 17:11:07.440 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+| pipe_fryum |   95.2    |
+26-07-10 17:11:07.441 - INFO: Saved class metrics to: results/anomalyclip/class_metrics_visa_10seed_0shot.csv
+26-07-10 17:11:37.537 - INFO: 
+
+26-07-10 17:11:37.537 - INFO: Namespace(test_data_path='./dataset/Visa', save_path='./results/anomalyclip', dataset='visa', pretrained_model='ViT-L/14@336px', checkpoint_path='./checkpoints/anomalyclip/9_12_4_multiscale_visa_epoch_15.pth', features_list=[6, 12, 18, 24], feature_map_layer=[0, 1, 2, 3], batch_size=1, num_workers=0, image_size=518, seed=10, k_shots=0, class_name=['pipe_fryum'], device='mps', eval_metrics=['I-AUROC'], evaluator_device='cpu', dpam_layer=20, depth=9, n_ctx=12, t_n_ctx=4, ffn=False, temperature=0.07, logit_scale=100.0, sigma=4, object_agnostic=True, save_heatmap=False, save_difficulty_inputs=False, save_sample_scores=True, predictions_only=False, save_selected_heatmaps=False, heatmap_topk=5, max_test_samples_per_class=None, corruption=None, corruption_severity=0, sample_csv=None)
+26-07-10 17:11:37.556 - INFO: Using device: mps
+26-07-10 17:11:41.907 - INFO: Loaded AnomalyCLIP prompt learner from: ./checkpoints/anomalyclip/9_12_4_multiscale_visa_epoch_15.pth
+26-07-10 17:13:44.552 - INFO: Saved sample scores to: results/anomalyclip/pipe_fryum.csv
+26-07-10 17:13:44.713 - INFO: 
+|    Name    |  I-AUROC  |
+|:----------:|:---------:|
+| pipe_fryum |   92.5    |
+26-07-10 17:13:44.714 - INFO: Saved class metrics to: results/anomalyclip/class_metrics_visa_10seed_0shot.csv
