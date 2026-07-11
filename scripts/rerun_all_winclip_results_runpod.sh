@@ -43,7 +43,7 @@ standalone_save_root="${STANDALONE_SAVE_ROOT:-./results/winclip}"
 
 datasets="${DATASETS:-mvtec visa btad}"
 splits="${SPLITS:-all easy normal hard}"
-corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
+corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness rotation translation}"
 eval_metrics="${EVAL_METRICS:-I-AUROC I-AP I-F1max P-AUROC P-AP P-F1max P-AUPRO}"
 target_eval_metrics="${TARGET_EVAL_METRICS:-I-AUROC P-AUROC P-AP P-F1max}"
 

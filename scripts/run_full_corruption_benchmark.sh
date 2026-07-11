@@ -12,7 +12,7 @@ results_root="${RESULTS_ROOT:-./results/corruption_benchmark}"
 models="${MODELS:-adaptclip winclip anomalyclip}"
 datasets="${DATASETS:-mvtec visa btad}"
 splits="${SPLITS:-all easy normal hard}"
-base_corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
+base_corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness rotation translation}"
 include_mvtec_extra="${INCLUDE_MVTEC_EXTRA:-0}"
 skip_existing="${SKIP_EXISTING:-1}"
 
@@ -45,6 +45,7 @@ adaptclip_checkpoint_for() {
     local base_dir="${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8"
     local candidates=(
         "${adaptclip_checkpoint_root}/${base_dir}/epoch_15.pth"
+        "${adaptclip_checkpoint_root}/adaptclip/${base_dir}/epoch_15.pth"
         "${adaptclip_checkpoint_root}/adaptclip_checkpoints/${base_dir}/epoch_15.pth"
         "./adaptclip_checkpoints/adaptclip_checkpoints/${base_dir}/epoch_15.pth"
         "./adaptclip_checkpoints/${base_dir}/epoch_15.pth"
@@ -69,9 +70,9 @@ anomalyclip_checkpoint_for() {
 
     local candidate
     if [[ "${dataset}" = "mvtec" ]]; then
-        candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
-    else
         candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_epoch_15.pth"
+    else
+        candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
     fi
 
     if [[ -f "${candidate}" ]]; then

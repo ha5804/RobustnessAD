@@ -518,7 +518,7 @@ def test(args):
     results_eval = dict(sample_ids=sample_ids, gt_masks=gt_masks, pr_masks=pr_masks, cls_names=cls_names, gt_anomalys=gt_anomalys, pr_anomalys=pr_anomalys, query_paths=query_paths)
     results_eval = {k: np.concatenate(v, axis=0) if k in ['cls_names', 'query_paths', 'sample_ids']  else torch.cat(v, dim=0) for k, v in results_eval.items()}
     if args.save_sample_scores:
-        sample_score_root = Path(args.save_path)
+        sample_score_root = Path(save_path)
         score_paths = []
         for cls_name in obj_list:
             safe_class_name = str(cls_name).replace("/", "_").replace("\\", "_")
@@ -617,7 +617,7 @@ if __name__ == '__main__':
     parser.add_argument("--max_test_samples_per_class", type=int, default=None, help="limit test samples per class for quick debugging")
     parser.add_argument("--device", type=str, default="auto", choices=["auto", "cuda", "mps", "cpu"], help="device to run inference on")
     parser.add_argument("--evaluator_device", type=str, default="auto", choices=["auto", "cuda", "cpu"], help="device to run evaluation metrics on")
-    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
+    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "rotation", "translation", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
     parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")
     parser.add_argument("--sample_csv", type=str, default=None, help="optional CSV with dataset and sample_key columns to filter test samples")

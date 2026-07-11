@@ -391,7 +391,7 @@ def test(args):
         for key, value in results_eval.items()
     }
     if args.save_sample_scores:
-        sample_score_root = Path(args.save_path)
+        sample_score_root = Path(save_path)
         score_paths = []
         for cls_name in obj_list:
             safe_class_name = str(cls_name).replace("/", "_").replace("\\", "_")
@@ -483,7 +483,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True, help="save top/bottom heatmap examples by per-image pixel AUROC")
     parser.add_argument("--heatmap_topk", type=int, default=5, help="number of high/low heatmaps to save per class")
     parser.add_argument("--max_test_samples_per_class", type=int, default=None, help="limit test samples per class for quick debugging")
-    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
+    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "rotation", "translation", "contrast", "jpeg_compression", "downsample_upsample"], help="optional corruption applied to test images")
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3], help="corruption severity; 0 disables corruption")
     parser.add_argument("--corrupt_prompts", action="store_true", help="also apply corruption to few-shot prompt images")
     parser.add_argument("--sample_csv", type=str, default=None, help="optional CSV with dataset and sample_key columns to filter test samples")

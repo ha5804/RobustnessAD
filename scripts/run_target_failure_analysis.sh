@@ -10,7 +10,7 @@ evaluator_device="${EVALUATOR_DEVICE:-cuda}"
 results_root="${RESULTS_ROOT:-./results/target_failure_analysis}"
 
 models="${MODELS:-adaptclip winclip anomalyclip}"
-corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
+corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness rotation translation}"
 eval_metrics="${EVAL_METRICS:-I-AUROC P-AUROC P-AP P-F1max}"
 skip_existing="${SKIP_EXISTING:-1}"
 save_heatmaps="${SAVE_HEATMAPS:-0}"
@@ -75,9 +75,9 @@ anomalyclip_checkpoint_for() {
 
     local candidate
     if [[ "${dataset}" = "mvtec" ]]; then
-        candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
-    else
         candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_epoch_15.pth"
+    else
+        candidate="${anomalyclip_checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
     fi
 
     if [[ -f "${candidate}" ]]; then

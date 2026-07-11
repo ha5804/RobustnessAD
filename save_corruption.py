@@ -16,6 +16,8 @@ CORRUPTIONS = [
     "gaussian_noise",
     "motion_blur",
     "brightness",
+    "rotation",
+    "translation",
     "contrast",
     "jpeg_compression",
     "downsample_upsample",

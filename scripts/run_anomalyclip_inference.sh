@@ -30,9 +30,9 @@ checkpoint_for() {
 
     local candidate
     if [[ "${dataset}" = "mvtec" ]]; then
-        candidate="${checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
-    else
         candidate="${checkpoint_root}/9_12_4_multiscale_epoch_15.pth"
+    else
+        candidate="${checkpoint_root}/9_12_4_multiscale_visa_epoch_15.pth"
     fi
 
     if [[ -f "${candidate}" ]]; then

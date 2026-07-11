@@ -17,6 +17,10 @@ def apply_corruption(image, corruption=None, severity=0):
         return motion_blur(image, severity)
     if corruption == "brightness":
         return brightness(image, severity)
+    if corruption == "rotation":
+        return rotation(image, severity)
+    if corruption == "translation":
+        return translation(image, severity)
     if corruption == "contrast":
         return contrast(image, severity)
     if corruption == "jpeg_compression":
@@ -52,6 +56,38 @@ def brightness(image, severity):
 
     enhancer = ImageEnhance.Brightness(image)
     return enhancer.enhance(factor)
+
+
+def rotation(image, severity):
+    """Rotate with reflected padding, then crop back to the original size."""
+    angles = [5, 15, 30]
+    angle = angles[severity - 1]
+    x = np.asarray(image)
+    height, width = x.shape[:2]
+    pad = max(height, width) // 2
+    pad_width = ((pad, pad), (pad, pad))
+    if x.ndim == 3:
+        pad_width += ((0, 0),)
+    padded = Image.fromarray(np.pad(x, pad_width, mode="reflect"))
+    rotated = padded.rotate(angle, resample=Image.BILINEAR, expand=False)
+    left = (rotated.width - width) // 2
+    top = (rotated.height - height) // 2
+    return rotated.crop((left, top, left + width, top + height))
+
+
+def translation(image, severity):
+    """Translate the full image down/right, filling exposed pixels by reflection."""
+    ratios = [0.05, 0.10, 0.20]
+    ratio = ratios[severity - 1]
+    x = np.asarray(image)
+    height, width = x.shape[:2]
+    dx = max(1, round(width * ratio))
+    dy = max(1, round(height * ratio))
+    pad_width = ((dy, 0), (dx, 0))
+    if x.ndim == 3:
+        pad_width += ((0, 0),)
+    shifted = np.pad(x, pad_width, mode="reflect")[:height, :width]
+    return Image.fromarray(shifted)
 
 
 def contrast(image, severity):

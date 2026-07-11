@@ -18,7 +18,7 @@ def resolve_corruption_save_path(save_path, dataset_name, class_name, corruption
     class_label = class_name or "all_classes"
     class_label = str(class_label).replace("/", "_")
     corruption_label = f"{corruption}_s{severity}"
-    if save_path.name == corruption_label:
+    if corruption in save_path.parts or corruption_label in save_path.parts:
         return str(save_path)
     return str(save_path / "corruption" / dataset_name / class_label / corruption_label)
 

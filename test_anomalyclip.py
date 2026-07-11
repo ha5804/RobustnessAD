@@ -485,7 +485,7 @@ def test(args):
         for key, value in results_eval.items()
     }
     if args.save_sample_scores:
-        sample_score_root = Path(args.save_path)
+        sample_score_root = Path(save_path)
         score_paths = []
         for cls_name in test_data.obj_list:
             safe_class_name = str(cls_name).replace("/", "_").replace("\\", "_")
@@ -576,7 +576,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_selected_heatmaps", "--save-selected-heatmaps", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--heatmap_topk", type=int, default=5)
     parser.add_argument("--max_test_samples_per_class", type=int, default=None)
-    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "contrast", "jpeg_compression", "downsample_upsample"])
+    parser.add_argument("--corruption", type=str, default=None, choices=[None, "gaussian_noise", "motion_blur", "brightness", "rotation", "translation", "contrast", "jpeg_compression", "downsample_upsample"])
     parser.add_argument("--corruption_severity", type=int, default=0, choices=[0, 1, 2, 3])
     parser.add_argument("--sample_csv", type=str, default=None, help="optional CSV with dataset and sample_key columns to filter test samples")
     args = parser.parse_args()

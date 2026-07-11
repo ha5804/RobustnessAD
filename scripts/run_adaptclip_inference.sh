@@ -27,12 +27,17 @@ checkpoint_for() {
     local train_dataset="$1"
     local base_dir="${n_ctx}_${vl_reduction}_${pq_mid_dim}_train_on_${train_dataset}_3adapters_batch8"
     local direct="${checkpoint_root}/${base_dir}/epoch_15.pth"
+    local nested_adaptclip="${checkpoint_root}/adaptclip/${base_dir}/epoch_15.pth"
     local nested="${checkpoint_root}/adaptclip_checkpoints/${base_dir}/epoch_15.pth"
     local legacy_nested="./adaptclip_checkpoints/adaptclip_checkpoints/${base_dir}/epoch_15.pth"
     local legacy_direct="./adaptclip_checkpoints/${base_dir}/epoch_15.pth"
 
     if [[ -f "${direct}" ]]; then
         printf '%s\n' "${direct}"
+        return
+    fi
+    if [[ -f "${nested_adaptclip}" ]]; then
+        printf '%s\n' "${nested_adaptclip}"
         return
     fi
     if [[ -f "${nested}" ]]; then
