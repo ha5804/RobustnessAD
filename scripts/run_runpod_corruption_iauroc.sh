@@ -1,24 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Run MVTec + VisA corruption evaluation for AdaptCLIP, AnomalyCLIP, and WinCLIP.
+# Evaluate already-generated MVTec_corruption and VisA_corruption datasets.
 # Output: results/<model>/<corruption>/<dataset>/{class_metrics_*.csv,<class>.csv,...}
 
 device="${CUDA_DEVICE:-0}"
 seed="${SEED:-10}"
 shot="${SHOT:-0}"
-severity="${SEVERITY:-3}"
 batch_size="${BATCH_SIZE:-8}"
 num_workers="${NUM_WORKERS:-4}"
 evaluator_device="${EVALUATOR_DEVICE:-cpu}"
 results_root="${RESULTS_ROOT:-./results}"
 models="${MODELS:-adaptclip anomalyclip winclip}"
 datasets="${DATASETS:-mvtec visa}"
-corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness rotation translation}"
+corruptions="${CORRUPTIONS:-gaussian_noise motion_blur brightness}"
 skip_existing="${SKIP_EXISTING:-1}"
 
-mvtec_root="${MVTEC_ROOT:-./dataset/MVTec}"
-visa_root="${VISA_ROOT:-./dataset/Visa}"
+mvtec_corruption_root="${MVTEC_CORRUPTION_ROOT:-./dataset/MVTec_corruption}"
+visa_corruption_root="${VISA_CORRUPTION_ROOT:-./dataset/VisA_corruption}"
 adaptclip_checkpoint_root="${CHECKPOINT_ROOT:-./checkpoints/adaptclip}"
 anomalyclip_checkpoint_root="${ANOMALYCLIP_CHECKPOINT_ROOT:-./checkpoints/anomalyclip}"
 anomalyclip_checkpoint_path="${ANOMALYCLIP_CHECKPOINT:-}"
@@ -28,10 +27,11 @@ vl_reduction="${VL_REDUCTION:-4}"
 pq_mid_dim="${PQ_MID_DIM:-128}"
 
 dataset_root() {
-    case "$1" in
-        mvtec) printf '%s\n' "${mvtec_root}" ;;
-        visa) printf '%s\n' "${visa_root}" ;;
-        *) echo "Unknown dataset: $1" >&2; exit 2 ;;
+    local dataset="$1" corruption="$2"
+    case "${dataset}" in
+        mvtec) printf '%s/%s\n' "${mvtec_corruption_root}" "${corruption}" ;;
+        visa) printf '%s/%s\n' "${visa_corruption_root}" "${corruption}" ;;
+        *) echo "Unknown dataset: ${dataset}" >&2; exit 2 ;;
     esac
 }
 
@@ -76,7 +76,7 @@ anomalyclip_checkpoint_for() {
 run_one() {
     local model="$1" dataset="$2" corruption="$3"
     local root save_dir metric_file checkpoint
-    root="$(dataset_root "${dataset}")"
+    root="$(dataset_root "${dataset}" "${corruption}")"
     save_dir="${results_root}/${model}/${corruption}/${dataset}"
     metric_file="${save_dir}/class_metrics_${dataset}_${seed}seed_${shot}shot.csv"
 
@@ -89,7 +89,7 @@ run_one() {
         return
     fi
     mkdir -p "${save_dir}"
-    echo "==> ${model} | ${dataset} | ${corruption} severity=${severity}"
+    echo "==> ${model} | ${dataset} | ${corruption} | data=${root}"
 
     case "${model}" in
         adaptclip)
@@ -102,8 +102,7 @@ run_one() {
                 --evaluator_device "${evaluator_device}" --eval_metrics I-AUROC \
                 --n_ctx "${n_ctx}" --vl_reduction "${vl_reduction}" --pq_mid_dim "${pq_mid_dim}" \
                 --visual_learner --textual_learner --pq_learner --pq_context \
-                --save_sample_scores --no-save-selected-heatmaps \
-                --corruption "${corruption}" --corruption_severity "${severity}"
+                --save_sample_scores --no-save-selected-heatmaps
             ;;
         anomalyclip)
             checkpoint="$(anomalyclip_checkpoint_for "${dataset}")"
@@ -112,8 +111,7 @@ run_one() {
                 --seed "${seed}" --k_shots "${shot}" --checkpoint_path "${checkpoint}" \
                 --save_path "${save_dir}" --batch_size "${batch_size}" \
                 --num_workers "${num_workers}" --evaluator_device "${evaluator_device}" \
-                --eval_metrics I-AUROC --save_sample_scores --no-save-selected-heatmaps \
-                --corruption "${corruption}" --corruption_severity "${severity}"
+                --eval_metrics I-AUROC --save_sample_scores --no-save-selected-heatmaps
             ;;
         winclip)
             CUDA_VISIBLE_DEVICES="${device}" python test_winclip.py \
@@ -121,8 +119,7 @@ run_one() {
                 --seed "${seed}" --k_shots "${shot}" --save_path "${save_dir}" \
                 --image_size 240 --batch_size "${batch_size}" --num_workers "${num_workers}" \
                 --evaluator_device "${evaluator_device}" --eval_metrics I-AUROC \
-                --save_sample_scores --no-save-selected-heatmaps \
-                --corruption "${corruption}" --corruption_severity "${severity}"
+                --save_sample_scores --no-save-selected-heatmaps
             ;;
         *) echo "Unknown model: ${model}" >&2; exit 2 ;;
     esac
